@@ -1,0 +1,65 @@
+# {{.Name}}
+
+{{.Description}}
+
+## Features
+
+- {{if hasREST .APIType}}REST API with Gin{{end}}{{if hasGRPC .APIType}}
+- gRPC Service{{end}}{{if hasAuth .AuthType}}
+- Authentication: {{.AuthType}}{{end}}
+- Database: {{.Database | upper}} with GORM{{if .WithDocker}}
+- Docker & Docker Compose{{end}}{{if .WithMonitor}}
+- Prometheus + Grafana monitoring{{end}}
+
+## Quick Start
+
+```bash
+# Install dependencies
+go mod tidy
+
+# Run locally
+go run cmd/server/main.go
+
+# Build
+go build -o bin/{{.Name}} cmd/server/main.go{{if .WithDocker}}
+
+# Run with Docker
+docker-compose up{{end}}
+```
+
+## Project Structure
+
+```
+{{.Name}}/
+├── cmd/
+│   └── server/          # Application entrypoint
+├── internal/
+│   ├── domain/          # Business entities
+│   ├── usecase/         # Business logic
+│   ├── repository/      # Data access
+│   └── delivery/        # HTTP/gRPC handlers
+├── pkg/                 # Public libraries{{if .WithDocker}}
+├── docker/              # Docker configurations{{end}}
+└── README.md
+```
+
+## Development
+
+```bash
+# Run tests
+go test ./...
+
+# Lint
+golangci-lint run{{if .WithDocker}}
+
+# Docker build
+docker build -t {{.Name}} .{{end}}
+```
+
+## License
+
+MIT
+
+## Generated
+
+This project was generated using [go-template](https://github.com/thinhdang/go-template).
