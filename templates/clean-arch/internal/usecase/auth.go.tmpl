@@ -1,0 +1,162 @@
+{{- if hasAuth .AuthType}}
+package usecase
+
+import (
+	"context"
+	"errors"
+
+	"{{.ModulePath}}/internal/domain/entity"
+	"{{.ModulePath}}/internal/domain/repository"
+{{- if hasJWT .AuthType}}
+	"{{.ModulePath}}/internal/infrastructure/auth"
+{{- end}}
+)
+
+var (
+	ErrInvalidCredentials = errors.New("invalid credentials")
+	ErrUserExists         = errors.New("user already exists")
+)
+
+// AuthUsecase handles authentication business logic
+type AuthUsecase struct {
+	userRepo repository.UserRepository
+{{- if hasJWT .AuthType}}
+	jwtService *auth.JWTService
+{{- end}}
+	userUsecase *UserUsecase
+}
+
+// NewAuthUsecase creates a new auth usecase
+func NewAuthUsecase(
+	userRepo repository.UserRepository,
+{{- if hasJWT .AuthType}}
+	jwtService *auth.JWTService,
+{{- end}}
+	userUsecase *UserUsecase,
+) *AuthUsecase {
+	return &AuthUsecase{
+		userRepo: userRepo,
+{{- if hasJWT .AuthType}}
+		jwtService: jwtService,
+{{- end}}
+		userUsecase: userUsecase,
+	}
+}
+
+// LoginRequest represents login credentials
+type LoginRequest struct {
+	Email    string `json:"email" binding:"required,email"`
+	Password string `json:"password" binding:"required"`
+}
+
+// RegisterRequest represents registration data
+type RegisterRequest struct {
+	Email    string `json:"email" binding:"required,email"`
+	Password string `json:"password" binding:"required,min=8"`
+	Name     string `json:"name" binding:"required"`
+}
+
+{{- if hasJWT .AuthType}}
+// LoginResponse represents login response with tokens
+type LoginResponse struct {
+	User   *entity.User      `json:"user"`
+	Tokens *auth.TokenPair   `json:"tokens"`
+}
+
+// Login authenticates user and returns tokens
+func (u *AuthUsecase) Login(ctx context.Context, req LoginRequest) (*LoginResponse, error) {
+	user, err := u.userUsecase.VerifyPassword(ctx, req.Email, req.Password)
+	if err != nil {
+		return nil, ErrInvalidCredentials
+	}
+
+	if !user.Active {
+		return nil, errors.New("user account is inactive")
+	}
+
+	tokens, err := u.jwtService.GenerateTokenPair(user.ID, user.Email, user.Role)
+	if err != nil {
+		return nil, err
+	}
+
+	return &LoginResponse{
+		User:   user,
+		Tokens: tokens,
+	}, nil
+}
+
+// Register creates new user and returns tokens
+func (u *AuthUsecase) Register(ctx context.Context, req RegisterRequest) (*LoginResponse, error) {
+	// Check if user exists
+	existing, _ := u.userRepo.GetByEmail(ctx, req.Email)
+	if existing != nil {
+		return nil, ErrUserExists
+	}
+
+	// Create user
+	user := &entity.User{
+		Email:    req.Email,
+		Password: req.Password,
+		Name:     req.Name,
+		Role:     "user",
+		Active:   true,
+	}
+
+	if err := u.userUsecase.Create(ctx, user); err != nil {
+		return nil, err
+	}
+
+	// Generate tokens
+	tokens, err := u.jwtService.GenerateTokenPair(user.ID, user.Email, user.Role)
+	if err != nil {
+		return nil, err
+	}
+
+	return &LoginResponse{
+		User:   user,
+		Tokens: tokens,
+	}, nil
+}
+
+// RefreshToken creates new access token from refresh token
+func (u *AuthUsecase) RefreshToken(ctx context.Context, refreshToken string) (string, error) {
+	return u.jwtService.RefreshAccessToken(refreshToken)
+}
+{{- else}}
+// Login authenticates user (basic implementation without JWT)
+func (u *AuthUsecase) Login(ctx context.Context, req LoginRequest) (*entity.User, error) {
+	user, err := u.userUsecase.VerifyPassword(ctx, req.Email, req.Password)
+	if err != nil {
+		return nil, ErrInvalidCredentials
+	}
+
+	if !user.Active {
+		return nil, errors.New("user account is inactive")
+	}
+
+	return user, nil
+}
+
+// Register creates new user
+func (u *AuthUsecase) Register(ctx context.Context, req RegisterRequest) (*entity.User, error) {
+	existing, _ := u.userRepo.GetByEmail(ctx, req.Email)
+	if existing != nil {
+		return nil, ErrUserExists
+	}
+
+	user := &entity.User{
+		Email:    req.Email,
+		Password: req.Password,
+		Name:     req.Name,
+		Role:     "user",
+		Active:   true,
+	}
+
+	if err := u.userUsecase.Create(ctx, user); err != nil {
+		return nil, err
+	}
+
+	return user, nil
+}
+{{- end}}
+{{- end}}

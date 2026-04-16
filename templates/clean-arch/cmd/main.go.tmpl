@@ -11,6 +11,9 @@ import (
 	"time"
 
 	"{{.ModulePath}}/internal/delivery/rest"
+{{- if hasJWT .AuthType}}
+	"{{.ModulePath}}/internal/infrastructure/auth"
+{{- end}}
 	"{{.ModulePath}}/internal/infrastructure/database"
 	"{{.ModulePath}}/internal/infrastructure/logger"
 	"{{.ModulePath}}/internal/infrastructure/repository"
@@ -36,11 +39,34 @@ func main() {
 	// Initialize repositories
 	userRepo := repository.NewUserRepository(db)
 
+{{- if hasJWT .AuthType}}
+	// Initialize JWT service
+	jwtService := auth.NewJWTService()
+{{- end}}
+
 	// Initialize usecases
 	userUsecase := usecase.NewUserUsecase(userRepo)
+{{- if hasAuth .AuthType}}
+	authUsecase := usecase.NewAuthUsecase(
+		userRepo,
+{{- if hasJWT .AuthType}}
+		jwtService,
+{{- end}}
+		userUsecase,
+	)
+{{- end}}
 
 	// Initialize router
-	router := rest.NewRouter(userUsecase, zapLogger)
+	router := rest.NewRouter(
+		userUsecase,
+{{- if hasAuth .AuthType}}
+		authUsecase,
+{{- end}}
+{{- if hasJWT .AuthType}}
+		jwtService,
+{{- end}}
+		zapLogger,
+	)
 
 	// Start server
 	srv := &http.Server{

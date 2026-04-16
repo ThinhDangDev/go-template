@@ -3,13 +3,26 @@ package rest
 import (
 	"{{.ModulePath}}/internal/delivery/rest/handler"
 	"{{.ModulePath}}/internal/delivery/rest/middleware"
+{{- if hasJWT .AuthType}}
+	authMiddleware "{{.ModulePath}}/internal/delivery/rest/middleware/auth"
+	"{{.ModulePath}}/internal/infrastructure/auth"
+{{- end}}
 	"{{.ModulePath}}/internal/infrastructure/logger"
 	"{{.ModulePath}}/internal/usecase"
 	"github.com/gin-gonic/gin"
 )
 
 // NewRouter creates a new HTTP router
-func NewRouter(userUsecase *usecase.UserUsecase, logger logger.Logger) *gin.Engine {
+func NewRouter(
+	userUsecase *usecase.UserUsecase,
+{{- if hasAuth .AuthType}}
+	authUsecase *usecase.AuthUsecase,
+{{- end}}
+{{- if hasJWT .AuthType}}
+	jwtService *auth.JWTService,
+{{- end}}
+	logger logger.Logger,
+) *gin.Engine {
 	router := gin.New()
 
 	// Middleware
@@ -24,7 +37,38 @@ func NewRouter(userUsecase *usecase.UserUsecase, logger logger.Logger) *gin.Engi
 	// API v1
 	v1 := router.Group("/api/v1")
 	{
-		// User routes
+{{- if hasAuth .AuthType}}
+		// Auth routes (public)
+		authHandler := handler.NewAuthHandler(authUsecase)
+		auth := v1.Group("/auth")
+		{
+			auth.POST("/register", authHandler.Register)
+			auth.POST("/login", authHandler.Login)
+{{- if hasJWT .AuthType}}
+			auth.POST("/refresh", authHandler.RefreshToken)
+{{- end}}
+		}
+
+{{- if hasJWT .AuthType}}
+		// Protected routes requiring JWT
+		protected := v1.Group("")
+		protected.Use(authMiddleware.JWTMiddleware(jwtService))
+		{
+			protected.GET("/auth/me", authHandler.Me)
+
+			// User routes (protected)
+			userHandler := handler.NewUserHandler(userUsecase)
+			users := protected.Group("/users")
+			{
+				users.POST("", userHandler.Create)
+				users.GET("/:id", userHandler.GetByID)
+				users.GET("", userHandler.List)
+				users.PUT("/:id", userHandler.Update)
+				users.DELETE("/:id", userHandler.Delete)
+			}
+		}
+{{- else}}
+		// User routes (no auth)
 		userHandler := handler.NewUserHandler(userUsecase)
 		users := v1.Group("/users")
 		{
@@ -34,6 +78,19 @@ func NewRouter(userUsecase *usecase.UserUsecase, logger logger.Logger) *gin.Engi
 			users.PUT("/:id", userHandler.Update)
 			users.DELETE("/:id", userHandler.Delete)
 		}
+{{- end}}
+{{- else}}
+		// User routes (no auth)
+		userHandler := handler.NewUserHandler(userUsecase)
+		users := v1.Group("/users")
+		{
+			users.POST("", userHandler.Create)
+			users.GET("/:id", userHandler.GetByID)
+			users.GET("", userHandler.List)
+			users.PUT("/:id", userHandler.Update)
+			users.DELETE("/:id", userHandler.Delete)
+		}
+{{- end}}
 	}
 
 	return router
