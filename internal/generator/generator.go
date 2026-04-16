@@ -61,7 +61,7 @@ func (g *Generator) Generate() error {
 		}
 
 		// Skip template directories that don't apply yet (BEFORE processing)
-		skipDirs := []string{"clean-arch", "docker", "monitoring", "ci-cd", "tests"}
+		skipDirs := []string{"docker", "monitoring", "ci-cd", "tests"}
 		for _, dir := range skipDirs {
 			if path == dir || strings.HasPrefix(path, dir+"/") {
 				if d.IsDir() && path == dir {
@@ -71,13 +71,15 @@ func (g *Generator) Generate() error {
 			}
 		}
 
-		// Handle base/ directory specially
-		if path == "base" {
-			return nil // Skip the base directory itself, only process its contents
+		// Handle base/ and clean-arch/ directories specially
+		if path == "base" || path == "clean-arch" {
+			return nil // Skip the directory itself, only process its contents
 		}
 
-		// Strip "base/" prefix from template paths (flatten structure)
-		relativePath := strings.TrimPrefix(path, "base/")
+		// Strip "base/" or "clean-arch/" prefix from template paths
+		relativePath := path
+		relativePath = strings.TrimPrefix(relativePath, "base/")
+		relativePath = strings.TrimPrefix(relativePath, "clean-arch/")
 
 		// Skip if this results in an empty path
 		if relativePath == "" || relativePath == "." {

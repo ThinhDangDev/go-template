@@ -1,0 +1,40 @@
+package rest
+
+import (
+	"{{.ModulePath}}/internal/delivery/rest/handler"
+	"{{.ModulePath}}/internal/delivery/rest/middleware"
+	"{{.ModulePath}}/internal/infrastructure/logger"
+	"{{.ModulePath}}/internal/usecase"
+	"github.com/gin-gonic/gin"
+)
+
+// NewRouter creates a new HTTP router
+func NewRouter(userUsecase *usecase.UserUsecase, logger logger.Logger) *gin.Engine {
+	router := gin.New()
+
+	// Middleware
+	router.Use(middleware.Logger(logger))
+	router.Use(middleware.Recovery(logger))
+	router.Use(middleware.CORS())
+
+	// Health check
+	healthHandler := handler.NewHealthHandler()
+	router.GET("/health", healthHandler.Check)
+
+	// API v1
+	v1 := router.Group("/api/v1")
+	{
+		// User routes
+		userHandler := handler.NewUserHandler(userUsecase)
+		users := v1.Group("/users")
+		{
+			users.POST("", userHandler.Create)
+			users.GET("/:id", userHandler.GetByID)
+			users.GET("", userHandler.List)
+			users.PUT("/:id", userHandler.Update)
+			users.DELETE("/:id", userHandler.Delete)
+		}
+	}
+
+	return router
+}
