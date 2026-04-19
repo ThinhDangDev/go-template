@@ -20,7 +20,7 @@ Go-template CLI generator has achieved **50% completion** with phases 1-4 fully 
 ## Completed Work (Phases 01-04)
 
 ### Phase 01: Project Foundation ✅ COMPLETE
-- Go module initialized (github.com/thinhdang/go-template)
+- Go module initialized (github.com/ThinhDangDev/go-template)
 - Directory structure created (cmd, internal/*, templates)
 - Makefile with build/test/lint/clean targets
 - All dependencies installed: Cobra, Viper, Survey v2

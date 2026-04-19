@@ -1,0 +1,32 @@
+//go:build integration
+
+package testutil
+
+import (
+	"testing"
+
+	"{{.ModulePath}}/internal/domain/entity"
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
+)
+
+// ConnectTestDatabase opens a GORM connection for integration tests.
+func ConnectTestDatabase(t *testing.T, dsn string) *gorm.DB {
+	t.Helper()
+
+	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
+	if err != nil {
+		t.Fatalf("failed to connect to database: %v", err)
+	}
+
+	return db
+}
+
+// MigrateTestDatabase ensures required test tables exist.
+func MigrateTestDatabase(t *testing.T, db *gorm.DB) {
+	t.Helper()
+
+	if err := db.AutoMigrate(&entity.User{}); err != nil {
+		t.Fatalf("failed to run migrations: %v", err)
+	}
+}

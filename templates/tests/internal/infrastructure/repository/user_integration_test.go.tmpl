@@ -1,0 +1,126 @@
+//go:build integration
+
+package repository_test
+
+import (
+	"context"
+	"fmt"
+	"testing"
+
+	"github.com/google/uuid"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+	"{{.ModulePath}}/internal/domain/entity"
+	"{{.ModulePath}}/internal/infrastructure/repository"
+	"{{.ModulePath}}/testutil"
+)
+
+func TestUserRepository_Integration(t *testing.T) {
+	if testing.Short() {
+		t.Skip("skipping integration test")
+	}
+
+	ctx := context.Background()
+	db := testutil.SetupTestDatabase(t, ctx)
+	repo := repository.NewUserRepository(db)
+
+	t.Run("Create and GetByID", func(t *testing.T) {
+		user := &entity.User{
+			ID:       uuid.New(),
+			Email:    "test@example.com",
+			Password: "hashed_password",
+			Name:     "Test User",
+			Role:     "user",
+			Active:   true,
+		}
+
+		err := repo.Create(ctx, user)
+		require.NoError(t, err)
+
+		found, err := repo.GetByID(ctx, user.ID)
+		require.NoError(t, err)
+		assert.Equal(t, user.Email, found.Email)
+		assert.Equal(t, user.Name, found.Name)
+	})
+
+	t.Run("GetByEmail", func(t *testing.T) {
+		user := &entity.User{
+			ID:       uuid.New(),
+			Email:    "email-test@example.com",
+			Password: "hashed_password",
+			Name:     "Email Test",
+			Role:     "user",
+			Active:   true,
+		}
+
+		err := repo.Create(ctx, user)
+		require.NoError(t, err)
+
+		found, err := repo.GetByEmail(ctx, user.Email)
+		require.NoError(t, err)
+		assert.Equal(t, user.ID, found.ID)
+	})
+
+	t.Run("Update", func(t *testing.T) {
+		user := &entity.User{
+			ID:       uuid.New(),
+			Email:    "update-test@example.com",
+			Password: "hashed_password",
+			Name:     "Before Update",
+			Role:     "user",
+			Active:   true,
+		}
+
+		err := repo.Create(ctx, user)
+		require.NoError(t, err)
+
+		user.Name = "After Update"
+		err = repo.Update(ctx, user)
+		require.NoError(t, err)
+
+		found, err := repo.GetByID(ctx, user.ID)
+		require.NoError(t, err)
+		assert.Equal(t, "After Update", found.Name)
+	})
+
+	t.Run("Delete", func(t *testing.T) {
+		user := &entity.User{
+			ID:       uuid.New(),
+			Email:    "delete-test@example.com",
+			Password: "hashed_password",
+			Name:     "Delete Test",
+			Role:     "user",
+			Active:   true,
+		}
+
+		err := repo.Create(ctx, user)
+		require.NoError(t, err)
+
+		err = repo.Delete(ctx, user.ID)
+		require.NoError(t, err)
+
+		found, err := repo.GetByID(ctx, user.ID)
+		require.NoError(t, err)
+		assert.Nil(t, found)
+	})
+
+	t.Run("List with pagination", func(t *testing.T) {
+		// Create multiple users
+		for i := 0; i < 5; i++ {
+			user := &entity.User{
+				ID:       uuid.New(),
+				Email:    fmt.Sprintf("list-test-%d@example.com", i),
+				Password: "hashed_password",
+				Name:     fmt.Sprintf("List User %d", i),
+				Role:     "user",
+				Active:   true,
+			}
+			err := repo.Create(ctx, user)
+			require.NoError(t, err)
+		}
+
+		users, err := repo.List(ctx, 3, 0)
+		require.NoError(t, err)
+		assert.Len(t, users, 3)
+	})
+}

@@ -1,11 +1,12 @@
 # Phase 10: Release & Distribution
 
 ---
-status: not-started
+status: complete
 priority: P2
-effort: 2h
+effort: 2h (actual: 2h)
 dependencies: [phase-09]
-blocked-by: "Phase 09 (CLI Polish) not started"
+completed-date: 2026-04-17T00:45:00Z
+verification: "Release assets created, shell/install syntax checked, GoReleaser config validated, and local Docker runtime boot verified"
 ---
 
 ## Context Links
@@ -16,6 +17,23 @@ blocked-by: "Phase 09 (CLI Polish) not started"
 ## Overview
 
 Set up release automation with GoReleaser, GitHub releases, and documentation for users to install go-template via multiple methods.
+
+## Completion Summary
+
+- Added root `.goreleaser.yml` for multi-platform release builds with ldflags metadata.
+- Added root GitHub release workflow under `.github/workflows/release.yml`.
+- Added release documentation and metadata files: `CHANGELOG.md`, `LICENSE`, and `scripts/install.sh`.
+- Updated root `README.md` with quick start, completion usage, and release asset references.
+- Kept version command output aligned with build metadata injected by ldflags.
+
+## Verification Notes
+
+- [x] `./bin/go-template --no-color version`
+- [x] `bash -n scripts/install.sh`
+- [x] `docker run --rm -v \"$PWD:/work\" -w /work goreleaser/goreleaser:latest check`
+- [x] Generated project Docker stack booted locally after remapping host ports used by the workstation
+- [ ] Hosted GitHub release run not executed in this environment
+- [ ] Cross-platform install and archive validation not executed in this environment
 
 ## Key Insights
 
@@ -128,7 +146,7 @@ changelog:
 
 release:
   github:
-    owner: thinhdang
+    owner: ThinhDangDev
     name: go-template
   draft: false
   prerelease: auto
@@ -142,7 +160,7 @@ release:
 
     ### Go Install (recommended)
     ```bash
-    go install github.com/thinhdang/go-template@{{.Tag}}
+    go install github.com/ThinhDangDev/go-template@{{.Tag}}
     ```
 
     ### Download Binary
@@ -151,10 +169,10 @@ release:
 brews:
   - name: go-template
     repository:
-      owner: thinhdang
+      owner: ThinhDangDev
       name: homebrew-tap
     folder: Formula
-    homepage: https://github.com/thinhdang/go-template
+    homepage: https://github.com/ThinhDangDev/go-template
     description: Go backend boilerplate CLI generator
     license: MIT
     test: |
@@ -203,8 +221,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - First public release
 
-[Unreleased]: https://github.com/thinhdang/go-template/compare/v0.1.0...HEAD
-[0.1.0]: https://github.com/thinhdang/go-template/releases/tag/v0.1.0
+[Unreleased]: https://github.com/ThinhDangDev/go-template/compare/v0.1.0...HEAD
+[0.1.0]: https://github.com/ThinhDangDev/go-template/releases/tag/v0.1.0
 ```
 
 ### Step 3: Create LICENSE
@@ -242,7 +260,7 @@ SOFTWARE.
 
 set -e
 
-REPO="thinhdang/go-template"
+REPO="ThinhDangDev/go-template"
 INSTALL_DIR="${INSTALL_DIR:-/usr/local/bin}"
 BINARY_NAME="go-template"
 
@@ -312,14 +330,14 @@ Production-ready Go backend boilerplate CLI generator.
 
 [![Go Version](https://img.shields.io/badge/go-1.22+-blue.svg)](https://golang.org)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
-[![Release](https://img.shields.io/github/v/release/thinhdang/go-template)](https://github.com/thinhdang/go-template/releases)
+[![Release](https://img.shields.io/github/v/release/ThinhDangDev/go-template)](https://github.com/ThinhDangDev/go-template/releases)
 
 ## Installation
 
 ### Using Go (recommended)
 
 ```bash
-go install github.com/thinhdang/go-template@latest
+go install github.com/ThinhDangDev/go-template@latest
 ```
 
 ### Using Homebrew (macOS/Linux)
@@ -331,12 +349,12 @@ brew install thinhdang/tap/go-template
 ### Using Script
 
 ```bash
-curl -sSL https://raw.githubusercontent.com/thinhdang/go-template/main/scripts/install.sh | bash
+curl -sSL https://raw.githubusercontent.com/ThinhDangDev/go-template/main/scripts/install.sh | bash
 ```
 
 ### Manual Download
 
-Download the appropriate binary for your platform from the [releases page](https://github.com/thinhdang/go-template/releases).
+Download the appropriate binary for your platform from the [releases page](https://github.com/ThinhDangDev/go-template/releases).
 
 ## Quick Start
 
@@ -436,7 +454,7 @@ package main
 import (
 	"os"
 
-	"github.com/thinhdang/go-template/cmd"
+	"github.com/ThinhDangDev/go-template/cmd"
 )
 
 // These variables are set via ldflags during build

@@ -70,7 +70,7 @@ go-template/
 
 ```bash
 cd /Users/thinhdang/go-boipleplate
-go mod init github.com/thinhdang/go-template
+go mod init github.com/ThinhDangDev/go-template
 ```
 
 ### Step 2: Create Directory Structure
@@ -88,7 +88,7 @@ package main
 import (
     "os"
 
-    "github.com/thinhdang/go-template/cmd"
+    "github.com/ThinhDangDev/go-template/cmd"
 )
 
 func main() {
@@ -180,7 +180,7 @@ Production-ready Go backend boilerplate CLI generator.
 ## Installation
 
 ```bash
-go install github.com/thinhdang/go-template@latest
+go install github.com/ThinhDangDev/go-template@latest
 ```
 
 ## Usage

@@ -9,7 +9,10 @@
 - Authentication: {{.AuthType}}{{end}}
 - Database: {{.Database | upper}} with GORM{{if .WithDocker}}
 - Docker & Docker Compose{{end}}{{if .WithMonitor}}
-- Prometheus + Grafana monitoring{{end}}
+- Prometheus + Grafana monitoring{{end}}{{if .WithCI}}
+- CI/CD workflow templates{{end}}
+- Unit and integration test scaffolding
+- golangci-lint configuration
 
 ## Quick Start
 
@@ -18,36 +21,43 @@
 go mod tidy
 
 # Run locally
-go run cmd/server/main.go
+go run ./cmd/main.go
 
 # Build
-go build -o bin/{{.Name}} cmd/server/main.go{{if .WithDocker}}
+go build -o bin/{{.Name}} ./cmd/main.go{{if .WithDocker}}
 
 # Run with Docker
-docker-compose up{{end}}
+docker compose up{{end}}
 ```
 
 ## Project Structure
 
-```
+```text
 {{.Name}}/
 ├── cmd/
-│   └── server/          # Application entrypoint
+│   └── main.go          # Application entrypoint
 ├── internal/
 │   ├── domain/          # Business entities
 │   ├── usecase/         # Business logic
-│   ├── repository/      # Data access
+│   ├── infrastructure/  # External adapters
 │   └── delivery/        # HTTP/gRPC handlers
-├── pkg/                 # Public libraries{{if .WithDocker}}
-├── docker/              # Docker configurations{{end}}
+├── testutil/            # Shared test helpers and fixtures
+├── Dockerfile           # Container image definition{{if .WithDocker}}
+├── docker-compose.yml   # Local stack orchestration{{end}}
 └── README.md
 ```
 
 ## Development
 
 ```bash
-# Run tests
+# Run unit tests
 go test ./...
+
+# Run integration tests (requires Docker)
+go test -tags=integration ./...
+
+# Skip integration tests in a quick pass
+go test -short ./...
 
 # Lint
 golangci-lint run{{if .WithDocker}}
@@ -56,10 +66,13 @@ golangci-lint run{{if .WithDocker}}
 docker build -t {{.Name}} .{{end}}
 ```
 
+{{if .WithCI}}CI/CD workflow files are included for the selected provider.{{end}}
+Integration tests use testcontainers to provision PostgreSQL automatically.
+
 ## License
 
 MIT
 
 ## Generated
 
-This project was generated using [go-template](https://github.com/thinhdang/go-template).
+This project was generated using [go-template](https://github.com/ThinhDangDev/go-template).

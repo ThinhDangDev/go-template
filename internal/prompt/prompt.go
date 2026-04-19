@@ -5,7 +5,7 @@ import (
 	"regexp"
 
 	"github.com/AlecAivazis/survey/v2"
-	"github.com/thinhdang/go-template/internal/config"
+	"github.com/ThinhDangDev/go-template/internal/config"
 )
 
 var modulePathRegex = regexp.MustCompile(`^[a-zA-Z0-9][a-zA-Z0-9._/-]*$`)

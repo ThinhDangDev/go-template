@@ -184,7 +184,7 @@ import (
     "strings"
     "text/template"
 
-    "github.com/thinhdang/go-template/internal/config"
+    "github.com/ThinhDangDev/go-template/internal/config"
 )
 
 // TemplateData wraps ProjectConfig with additional template helpers
@@ -334,8 +334,8 @@ import (
     "strings"
     "time"
 
-    "github.com/thinhdang/go-template/internal/config"
-    "github.com/thinhdang/go-template/templates"
+    "github.com/ThinhDangDev/go-template/internal/config"
+    "github.com/ThinhDangDev/go-template/templates"
 )
 
 // Generator orchestrates project generation

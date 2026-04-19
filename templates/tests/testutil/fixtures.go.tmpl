@@ -1,0 +1,50 @@
+package testutil
+
+import (
+	"fmt"
+	"time"
+
+	"github.com/google/uuid"
+	"{{.ModulePath}}/internal/domain/entity"
+)
+
+// NewTestUser creates a test user with default values
+func NewTestUser(overrides ...func(*entity.User)) *entity.User {
+	user := &entity.User{
+		ID:        uuid.New(),
+		Email:     fmt.Sprintf("test-%s@example.com", uuid.New().String()[:8]),
+		Password:  "$2a$10$abcdefghijklmnopqrstuv", // bcrypt hash placeholder
+		Name:      "Test User",
+		Role:      "user",
+		Active:    true,
+		CreatedAt: time.Now(),
+		UpdatedAt: time.Now(),
+	}
+
+	for _, override := range overrides {
+		override(user)
+	}
+
+	return user
+}
+
+// WithEmail sets the email for a test user
+func WithEmail(email string) func(*entity.User) {
+	return func(u *entity.User) {
+		u.Email = email
+	}
+}
+
+// WithRole sets the role for a test user
+func WithRole(role string) func(*entity.User) {
+	return func(u *entity.User) {
+		u.Role = role
+	}
+}
+
+// WithInactive makes the test user inactive
+func WithInactive() func(*entity.User) {
+	return func(u *entity.User) {
+		u.Active = false
+	}
+}

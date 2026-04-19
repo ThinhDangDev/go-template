@@ -1,6 +1,7 @@
 package generator
 
 import (
+	"bytes"
 	"fmt"
 	"io/fs"
 	"os"
@@ -9,8 +10,8 @@ import (
 	"text/template"
 	"time"
 
-	"github.com/thinhdang/go-template/internal/config"
-	"github.com/thinhdang/go-template/templates"
+	"github.com/ThinhDangDev/go-template/internal/config"
+	"github.com/ThinhDangDev/go-template/templates"
 )
 
 // Generator handles project generation from templates
@@ -44,7 +45,7 @@ func (g *Generator) Generate() error {
 		"AuthType":    string(g.cfg.AuthType),
 		"Database":    g.cfg.Database,
 		"WithDocker":  g.cfg.WithDocker,
-		"WithCI":      g.cfg.WithCI,
+		"WithCI":      g.cfg.WithCI != "none",
 		"WithMonitor": g.cfg.WithMonitor,
 		"Year":        time.Now().Year(),
 	}
@@ -60,26 +61,64 @@ func (g *Generator) Generate() error {
 			return nil
 		}
 
-		// Skip template directories that don't apply yet (BEFORE processing)
-		skipDirs := []string{"docker", "monitoring", "ci-cd", "tests"}
-		for _, dir := range skipDirs {
-			if path == dir || strings.HasPrefix(path, dir+"/") {
-				if d.IsDir() && path == dir {
-					return fs.SkipDir // Don't traverse into these directories
-				}
-				return nil
+		switch {
+		case g.cfg.WithCI == "github" && (path == "ci-cd/gitlab" || strings.HasPrefix(path, "ci-cd/gitlab/")):
+			if d.IsDir() && path == "ci-cd/gitlab" {
+				return fs.SkipDir
 			}
+			return nil
+		case g.cfg.WithCI == "gitlab" && (path == "ci-cd/github" || strings.HasPrefix(path, "ci-cd/github/")):
+			if d.IsDir() && path == "ci-cd/github" {
+				return fs.SkipDir
+			}
+			return nil
 		}
 
-		// Handle base/ and clean-arch/ directories specially
-		if path == "base" || path == "clean-arch" {
+		// Skip CI/CD templates if not enabled
+		if g.cfg.WithCI == "none" && (path == "ci-cd" || strings.HasPrefix(path, "ci-cd/")) {
+			if d.IsDir() && path == "ci-cd" {
+				return fs.SkipDir
+			}
+			return nil
+		}
+
+		// Conditionally skip docker/monitoring based on config
+		if !g.cfg.WithDocker && (path == "docker" || strings.HasPrefix(path, "docker/")) {
+			if d.IsDir() && path == "docker" {
+				return fs.SkipDir
+			}
+			return nil
+		}
+		if !g.cfg.WithMonitor && (path == "monitoring" || strings.HasPrefix(path, "monitoring/")) {
+			if d.IsDir() && path == "monitoring" {
+				return fs.SkipDir
+			}
+			return nil
+		}
+
+		// Handle template root directories specially
+		if path == "base" || path == "clean-arch" || path == "docker" || path == "monitoring" || path == "ci-cd" || path == "tests" {
 			return nil // Skip the directory itself, only process its contents
 		}
 
-		// Strip "base/" or "clean-arch/" prefix from template paths
+		// Strip template directory prefixes from paths
 		relativePath := path
-		relativePath = strings.TrimPrefix(relativePath, "base/")
-		relativePath = strings.TrimPrefix(relativePath, "clean-arch/")
+		switch {
+		case path == "ci-cd/github":
+			relativePath = ".github"
+		case strings.HasPrefix(path, "ci-cd/github/"):
+			relativePath = filepath.Join(".github", strings.TrimPrefix(path, "ci-cd/github/"))
+		case path == "ci-cd/gitlab":
+			relativePath = ""
+		case strings.HasPrefix(path, "ci-cd/gitlab/"):
+			relativePath = strings.TrimPrefix(path, "ci-cd/gitlab/")
+		default:
+			relativePath = strings.TrimPrefix(relativePath, "base/")
+			relativePath = strings.TrimPrefix(relativePath, "clean-arch/")
+			relativePath = strings.TrimPrefix(relativePath, "docker/")
+			relativePath = strings.TrimPrefix(relativePath, "ci-cd/")
+			relativePath = strings.TrimPrefix(relativePath, "tests/")
+		}
 
 		// Skip if this results in an empty path
 		if relativePath == "" || relativePath == "." {
@@ -110,16 +149,29 @@ func (g *Generator) Generate() error {
 			return fmt.Errorf("failed to parse template %s: %w", path, err)
 		}
 
+		var rendered bytes.Buffer
+		if err := tmpl.Execute(&rendered, data); err != nil {
+			return fmt.Errorf("failed to execute template %s: %w", path, err)
+		}
+
+		// Skip empty outputs from conditionally-rendered templates and placeholder files.
+		if strings.TrimSpace(rendered.String()) == "" {
+			return nil
+		}
+
 		// Create output file
+		if err := os.MkdirAll(filepath.Dir(targetPath), 0755); err != nil {
+			return fmt.Errorf("failed to create parent directory for %s: %w", targetPath, err)
+		}
+
 		outFile, err := os.Create(targetPath)
 		if err != nil {
 			return fmt.Errorf("failed to create file %s: %w", targetPath, err)
 		}
 		defer outFile.Close()
 
-		// Execute template
-		if err := tmpl.Execute(outFile, data); err != nil {
-			return fmt.Errorf("failed to execute template %s: %w", path, err)
+		if _, err := outFile.Write(rendered.Bytes()); err != nil {
+			return fmt.Errorf("failed to write file %s: %w", targetPath, err)
 		}
 
 		return nil

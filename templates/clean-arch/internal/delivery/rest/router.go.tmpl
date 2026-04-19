@@ -33,6 +33,11 @@ func NewRouter(
 	// Health check
 	healthHandler := handler.NewHealthHandler()
 	router.GET("/health", healthHandler.Check)
+{{- if .WithMonitor}}
+
+	// Metrics endpoint for Prometheus
+	router.GET("/metrics", handler.MetricsHandler())
+{{- end}}
 
 	// API v1
 	v1 := router.Group("/api/v1")

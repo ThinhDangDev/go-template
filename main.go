@@ -3,7 +3,7 @@ package main
 import (
 	"os"
 
-	"github.com/thinhdang/go-template/cmd"
+	"github.com/ThinhDangDev/go-template/cmd"
 )
 
 // These are set via ldflags at build time

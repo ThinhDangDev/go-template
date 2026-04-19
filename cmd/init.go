@@ -3,12 +3,14 @@ package cmd
 import (
 	"fmt"
 	"os"
+	"path/filepath"
 	"regexp"
 
+	uicli "github.com/ThinhDangDev/go-template/internal/cli"
+	"github.com/ThinhDangDev/go-template/internal/config"
+	"github.com/ThinhDangDev/go-template/internal/generator"
+	"github.com/ThinhDangDev/go-template/internal/prompt"
 	"github.com/spf13/cobra"
-	"github.com/thinhdang/go-template/internal/config"
-	"github.com/thinhdang/go-template/internal/generator"
-	"github.com/thinhdang/go-template/internal/prompt"
 )
 
 var projectNameRegex = regexp.MustCompile(`^[a-zA-Z][a-zA-Z0-9_-]*$`)
@@ -27,10 +29,13 @@ Example:
 }
 
 var nonInteractive bool
+var skipValidate bool
 
 func init() {
 	initCmd.Flags().BoolVar(&nonInteractive, "non-interactive", false,
 		"use defaults without prompting")
+	initCmd.Flags().BoolVar(&skipValidate, "skip-validate", false,
+		"skip post-generation validation (go mod tidy/build/test)")
 	rootCmd.AddCommand(initCmd)
 }
 
@@ -39,12 +44,12 @@ func runInit(cmd *cobra.Command, args []string) error {
 
 	// Validate project name
 	if !projectNameRegex.MatchString(projectName) {
-		return fmt.Errorf("invalid project name: must start with letter, contain only letters, numbers, hyphens, underscores")
+		return fmt.Errorf("invalid project name %q: use a leading letter followed by letters, numbers, hyphens, or underscores", projectName)
 	}
 
 	// Check if directory exists
 	if _, err := os.Stat(projectName); !os.IsNotExist(err) {
-		return fmt.Errorf("directory '%s' already exists", projectName)
+		return fmt.Errorf("directory %q already exists; choose a different project name or remove the existing directory", projectName)
 	}
 
 	// Get configuration
@@ -60,28 +65,53 @@ func runInit(cmd *cobra.Command, args []string) error {
 		}
 	}
 
-	// Print summary
-	fmt.Println("\n📦 Project Configuration:")
-	fmt.Printf("  Name:        %s\n", cfg.Name)
-	fmt.Printf("  Module:      %s\n", cfg.ModulePath)
-	fmt.Printf("  API:         %s\n", cfg.APIType)
-	fmt.Printf("  Auth:        %s\n", cfg.AuthType)
-	fmt.Printf("  Docker:      %v\n", cfg.WithDocker)
-	fmt.Printf("  CI:          %s\n", cfg.WithCI)
-	fmt.Printf("  Monitoring:  %v\n", cfg.WithMonitor)
+	uicli.Header("Project Configuration")
+	uicli.Info("  Name:        %s", cfg.Name)
+	uicli.Info("  Module:      %s", cfg.ModulePath)
+	uicli.Info("  API:         %s", cfg.APIType)
+	uicli.Info("  Auth:        %s", cfg.AuthType)
+	uicli.Info("  Docker:      %v", cfg.WithDocker)
+	uicli.Info("  CI:          %s", cfg.WithCI)
+	uicli.Info("  Monitoring:  %v", cfg.WithMonitor)
 
-	// Generate project
-	fmt.Println("\n🚀 Generating project...")
+	uicli.Step(1, 3, "Generating project files")
 	gen := generator.New(cfg)
+	spinner := uicli.NewSpinner("Generating project")
+	spinner.Start()
 	if err := gen.Generate(); err != nil {
+		spinner.StopWithError("Generation failed")
 		return fmt.Errorf("failed to generate project: %w", err)
 	}
+	spinner.StopWithSuccess(fmt.Sprintf("Project %q created", cfg.Name))
 
-	fmt.Printf("\n✅ Project '%s' created successfully!\n", cfg.Name)
-	fmt.Println("\nNext steps:")
-	fmt.Printf("  cd %s\n", cfg.Name)
-	fmt.Println("  go mod tidy")
-	fmt.Println("  make run")
+	uicli.Step(2, 3, "Verifying generated structure")
+	if err := generator.VerifyGeneratedProject(cfg.Name); err != nil {
+		return fmt.Errorf("project generated but structure verification failed: %w", err)
+	}
+	uicli.Success("Generated structure looks correct")
+
+	if skipValidate {
+		uicli.Warning("Skipped post-generation validation")
+	} else {
+		uicli.Step(3, 3, "Running post-generation validation")
+		spinner = uicli.NewSpinner("Validating generated project")
+		spinner.Start()
+		result, err := uicli.ValidateGeneratedProject(cfg.Name)
+		if err != nil {
+			spinner.StopWithError("Validation failed")
+			uicli.Warning("Project files were generated in %s", cfg.Name)
+			return fmt.Errorf("post-generation validation failed: %w", err)
+		}
+		spinner.StopWithSuccess("Validation passed")
+		for _, warning := range result.Warnings {
+			uicli.Warning("%s", warning)
+		}
+	}
+
+	uicli.Header("Next Steps")
+	uicli.Info("  cd %s", filepath.Base(cfg.Name))
+	uicli.Info("  make run")
+	uicli.Info("  go-template completion zsh > \"${fpath[1]}/_go-template\"")
 
 	return nil
 }

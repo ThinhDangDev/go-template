@@ -97,12 +97,12 @@ Generated files for `test-project` with default config:
 ```
 Total coverage: 0.0%
 Packages analyzed: 6
-  - github.com/thinhdang/go-template (0.0%)
-  - github.com/thinhdang/go-template/cmd (0.0%)
-  - github.com/thinhdang/go-template/internal/config (0.0%)
-  - github.com/thinhdang/go-template/internal/generator (0.0%)
-  - github.com/thinhdang/go-template/internal/prompt (0.0%)
-  - github.com/thinhdang/go-template/templates (no test files)
+  - github.com/ThinhDangDev/go-template (0.0%)
+  - github.com/ThinhDangDev/go-template/cmd (0.0%)
+  - github.com/ThinhDangDev/go-template/internal/config (0.0%)
+  - github.com/ThinhDangDev/go-template/internal/generator (0.0%)
+  - github.com/ThinhDangDev/go-template/internal/prompt (0.0%)
+  - github.com/ThinhDangDev/go-template/templates (no test files)
 ```
 
 **Critical Missing Test Coverage:**

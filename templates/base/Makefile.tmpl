@@ -3,10 +3,10 @@
 BINARY_NAME={{.Name}}
 
 run:
-	go run cmd/server/main.go
+	go run ./cmd/main.go
 
 build:
-	go build -o bin/$(BINARY_NAME) cmd/server/main.go
+	go build -o bin/$(BINARY_NAME) ./cmd/main.go
 
 test:
 	go test -v -race -coverprofile=coverage.txt ./...
@@ -22,7 +22,7 @@ docker-build:
 	docker build -t $(BINARY_NAME) .
 
 docker-up:
-	docker-compose up -d
+	docker compose up -d
 
 docker-down:
-	docker-compose down{{end}}
+	docker compose down{{end}}

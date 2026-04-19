@@ -197,7 +197,7 @@ import (
     "regexp"
 
     "github.com/AlecAivazis/survey/v2"
-    "github.com/thinhdang/go-template/internal/config"
+    "github.com/ThinhDangDev/go-template/internal/config"
 )
 
 var modulePathRegex = regexp.MustCompile(`^[a-zA-Z0-9][a-zA-Z0-9._/-]*$`)
@@ -337,7 +337,7 @@ import (
     "regexp"
 
     "github.com/spf13/cobra"
-    "github.com/thinhdang/go-template/internal/prompt"
+    "github.com/ThinhDangDev/go-template/internal/prompt"
 )
 
 var projectNameRegex = regexp.MustCompile(`^[a-zA-Z][a-zA-Z0-9_-]*$`)
@@ -415,7 +415,7 @@ package main
 import (
     "os"
 
-    "github.com/thinhdang/go-template/cmd"
+    "github.com/ThinhDangDev/go-template/cmd"
 )
 
 // These are set via ldflags at build time

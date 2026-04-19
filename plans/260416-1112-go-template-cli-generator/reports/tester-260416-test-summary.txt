@@ -2,7 +2,7 @@
                  GO-TEMPLATE CLI GENERATOR - TEST SUMMARY
 ================================================================================
 
-PROJECT: go-boipleplate (github.com/thinhdang/go-template)
+PROJECT: go-boipleplate (github.com/ThinhDangDev/go-template)
 DATE: 2026-04-16
 TESTER: QA Engineer
 REPORT LOCATION: /Users/thinhdang/go-boipleplate/plans/260416-1112-go-template-cli-generator/reports/tester-260416-comprehensive-test-report.md

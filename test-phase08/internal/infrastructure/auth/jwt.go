@@ -1,0 +1,151 @@
+
+package auth
+
+import (
+	"errors"
+	"os"
+	"time"
+
+	"github.com/golang-jwt/jwt/v5"
+	"github.com/google/uuid"
+)
+
+var (
+	ErrInvalidToken = errors.New("invalid token")
+	ErrExpiredToken = errors.New("token has expired")
+)
+
+// Claims represents JWT claims
+type Claims struct {
+	UserID uuid.UUID `json:"user_id"`
+	Email  string    `json:"email"`
+	Role   string    `json:"role"`
+	jwt.RegisteredClaims
+}
+
+// JWTService handles JWT operations
+type JWTService struct {
+	secretKey     []byte
+	accessExpiry  time.Duration
+	refreshExpiry time.Duration
+}
+
+// NewJWTService creates a new JWT service
+func NewJWTService() *JWTService {
+	secret := getEnv("JWT_SECRET", "your-secret-key-change-this-in-production")
+	return &JWTService{
+		secretKey:     []byte(secret),
+		accessExpiry:  15 * time.Minute,
+		refreshExpiry: 7 * 24 * time.Hour,
+	}
+}
+
+// TokenPair represents access and refresh tokens
+type TokenPair struct {
+	AccessToken  string    `json:"access_token"`
+	RefreshToken string    `json:"refresh_token"`
+	ExpiresAt    time.Time `json:"expires_at"`
+}
+
+// GenerateTokenPair creates new access and refresh tokens
+func (s *JWTService) GenerateTokenPair(userID uuid.UUID, email, role string) (*TokenPair, error) {
+	now := time.Now()
+	accessExpiry := now.Add(s.accessExpiry)
+
+	// Access token
+	accessClaims := Claims{
+		UserID: userID,
+		Email:  email,
+		Role:   role,
+		RegisteredClaims: jwt.RegisteredClaims{
+			ExpiresAt: jwt.NewNumericDate(accessExpiry),
+			IssuedAt:  jwt.NewNumericDate(now),
+			Subject:   userID.String(),
+		},
+	}
+	accessToken := jwt.NewWithClaims(jwt.SigningMethodHS256, accessClaims)
+	accessTokenString, err := accessToken.SignedString(s.secretKey)
+	if err != nil {
+		return nil, err
+	}
+
+	// Refresh token
+	refreshClaims := jwt.RegisteredClaims{
+		ExpiresAt: jwt.NewNumericDate(now.Add(s.refreshExpiry)),
+		IssuedAt:  jwt.NewNumericDate(now),
+		Subject:   userID.String(),
+	}
+	refreshToken := jwt.NewWithClaims(jwt.SigningMethodHS256, refreshClaims)
+	refreshTokenString, err := refreshToken.SignedString(s.secretKey)
+	if err != nil {
+		return nil, err
+	}
+
+	return &TokenPair{
+		AccessToken:  accessTokenString,
+		RefreshToken: refreshTokenString,
+		ExpiresAt:    accessExpiry,
+	}, nil
+}
+
+// ValidateToken validates and parses JWT token
+func (s *JWTService) ValidateToken(tokenString string) (*Claims, error) {
+	token, err := jwt.ParseWithClaims(tokenString, &Claims{}, func(token *jwt.Token) (interface{}, error) {
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, ErrInvalidToken
+		}
+		return s.secretKey, nil
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	claims, ok := token.Claims.(*Claims)
+	if !ok || !token.Valid {
+		return nil, ErrInvalidToken
+	}
+
+	if claims.ExpiresAt.Before(time.Now()) {
+		return nil, ErrExpiredToken
+	}
+
+	return claims, nil
+}
+
+// RefreshAccessToken creates new access token from refresh token
+func (s *JWTService) RefreshAccessToken(refreshTokenString string) (string, error) {
+	token, err := jwt.ParseWithClaims(refreshTokenString, &jwt.RegisteredClaims{}, func(token *jwt.Token) (interface{}, error) {
+		return s.secretKey, nil
+	})
+
+	if err != nil || !token.Valid {
+		return "", ErrInvalidToken
+	}
+
+	claims, ok := token.Claims.(*jwt.RegisteredClaims)
+	if !ok || claims.ExpiresAt.Before(time.Now()) {
+		return "", ErrExpiredToken
+	}
+
+	// Create new access token (would need to fetch user data from DB in real impl)
+	userID, _ := uuid.Parse(claims.Subject)
+	newClaims := Claims{
+		UserID: userID,
+		RegisteredClaims: jwt.RegisteredClaims{
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(s.accessExpiry)),
+			IssuedAt:  jwt.NewNumericDate(time.Now()),
+			Subject:   claims.Subject,
+		},
+	}
+
+	newToken := jwt.NewWithClaims(jwt.SigningMethodHS256, newClaims)
+	return newToken.SignedString(s.secretKey)
+}
+
+func getEnv(key, defaultValue string) string {
+	if value := os.Getenv(key); value != "" {
+		return value
+	}
+	return defaultValue
+}

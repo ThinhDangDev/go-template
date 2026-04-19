@@ -1,11 +1,12 @@
 # Phase 09: CLI Polish & Validation
 
 ---
-status: not-started
+status: complete
 priority: P1
-effort: 2h
+effort: 2h (actual: 2h)
 dependencies: [phase-08]
-blocked-by: "Phase 08 (CI/CD) not started; also needed to fix project structure issue"
+completed-date: 2026-04-17T00:45:00Z
+verification: "Repo tests passed, completion generation works, and default CLI init passed end-to-end with post-generation validation"
 critical-for-release: true
 ---
 
@@ -27,6 +28,14 @@ critical-for-release: true
 ## Overview
 
 Polish the CLI with improved error handling, validation, progress indicators, colored output, and post-generation verification. Ensure a smooth user experience.
+
+## Completion Summary
+
+- Added CLI output helpers under `internal/cli/` for color-aware messages, step output, and spinner progress.
+- Added `completion` command plus `--no-color` and `--skip-validate` support.
+- Added generated-project structure verification and post-generation validation (`go mod tidy`, `go build ./...`, `go test ./...`).
+- Fixed generated project path issues in `Makefile` and `README` templates by switching to `cmd/main.go` and modern `docker compose` commands.
+- Verified `go-template init ... --non-interactive` succeeds end-to-end with validation enabled.
 
 ## Key Insights
 
@@ -74,6 +83,13 @@ internal/
 ### Files to Modify
 - `cmd/init.go` - Add progress, validation
 - `cmd/root.go` - Add --no-color flag
+
+## Verification Notes
+
+- [x] `go test -count=1 ./...`
+- [x] `go-template completion zsh` emits shell completion script successfully
+- [x] `go-template --no-color init sample-phase9 --non-interactive` passes structure verification and post-generation validation
+- [x] Generated `Makefile` builds successfully via `make build`
 
 ## Implementation Steps
 
@@ -380,7 +396,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/thinhdang/go-template/templates"
+	"github.com/ThinhDangDev/go-template/templates"
 )
 
 // VerifyTemplates checks all templates for syntax errors
