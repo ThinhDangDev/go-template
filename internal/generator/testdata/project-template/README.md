@@ -50,6 +50,23 @@ make run
 
 `serve` fails fast if the required schema is missing, so migrations must run first.
 
+## Architecture Flow
+
+```mermaid
+flowchart LR
+    Client["HTTP client"] --> HTTP["Gin + grpc-gateway (:8080)"]
+    GRPCClient["gRPC client"] --> GRPC["native gRPC (:9090)"]
+
+    HTTP --> Handler["internal/api/handler"]
+    GRPC --> Handler
+    Handler --> UseCase["internal/usecase"]
+    UseCase --> Repo["internal/repository"]
+    Repo --> DB[("PostgreSQL")]
+
+    HTTP --> Obs["trace + log + metrics"]
+    GRPC --> Obs
+```
+
 ## Routes
 
 - `GET /healthz`
@@ -71,14 +88,21 @@ HTTP JSON is served by Gin + grpc-gateway on port `8080` by default. Native gRPC
 cmd/main.go
 configs/rbac_model.conf
 generate.sh
-internal/boilerplate/
-  app/
-  auth/
-  cli/
-  config/
-  http/
-  store/
-  telemetry/
+internal/api/handler/
+internal/app/
+internal/auth/
+internal/cli/
+internal/config/
+internal/domain/
+  entity/
+  interface/
+    repository/
+    usecase/
+internal/http/
+internal/pkg/authctx/
+internal/repository/
+internal/telemetry/
+internal/usecase/
 internal/docs/
 migrations/sql/
 proto/

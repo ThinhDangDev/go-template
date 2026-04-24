@@ -25,6 +25,27 @@ The generated project includes:
 - structured JSON logging
 - Docker + docker-compose
 
+## Template Flow
+
+```mermaid
+flowchart LR
+    Init["go-template init <project-name>"] --> Scaffold["Scaffold repo"]
+    Scaffold --> Assets["cmd + internal + proto + protogen + migrations"]
+    Assets --> Dev["make proto / make migrate-up / make seed-admin / make run"]
+
+    Dev --> HTTP["Gin + grpc-gateway (:8080)"]
+    Dev --> GRPC["native gRPC (:9090)"]
+
+    HTTP --> Handler["internal/api/handler"]
+    GRPC --> Handler
+    Handler --> UseCase["internal/usecase"]
+    UseCase --> Repo["internal/repository"]
+    Repo --> DB[("PostgreSQL")]
+
+    HTTP --> Obs["trace + log + metrics"]
+    GRPC --> Obs
+```
+
 ## Local Development
 
 ```bash
