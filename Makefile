@@ -5,7 +5,7 @@ help: ## Display available targets
 
 build: ## Build the generator binary
 	@mkdir -p bin
-	go build -o ./bin/go-template ./cmd/main.go
+	go build -o ./bin/go-template ./cmd/go-template
 
 test: ## Run unit tests
 	go test ./...

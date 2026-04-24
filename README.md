@@ -5,6 +5,7 @@
 ## Usage
 
 ```bash
+go install github.com/ThinhDangDev/go-template/cmd/go-template@latest
 go-template init my-service
 go-template init my-service --module github.com/acme/my-service
 ```
@@ -23,9 +24,9 @@ The generated project includes:
 ## Local Development
 
 ```bash
-go build ./cmd/main.go
+go build ./cmd/go-template
 go test ./...
-go run ./cmd/main.go init demo-api
+go run ./cmd/go-template init demo-api
 ```
 
 ## Generated Project Flow
