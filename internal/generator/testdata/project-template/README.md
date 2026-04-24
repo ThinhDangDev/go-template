@@ -29,20 +29,26 @@ go run ./cmd/main.go seed admin --email admin@example.com --password ChangeMe123
 ## Quick Start
 
 1. Copy `.env.example` to `.env`.
-2. Start PostgreSQL.
-3. Apply migrations:
+2. Generate proto, grpc-gateway, and OpenAPI artifacts:
+
+```bash
+make proto
+```
+
+3. Start PostgreSQL.
+4. Apply migrations:
 
 ```bash
 make migrate-up
 ```
 
-4. Seed the first admin:
+5. Seed the first admin:
 
 ```bash
 make seed-admin
 ```
 
-5. Start the API:
+6. Start the API:
 
 ```bash
 make run
@@ -69,6 +75,11 @@ flowchart LR
 
 ## Routes
 
+This template currently serves `10` HTTP endpoints total:
+
+- `4` infrastructure endpoints: `/healthz`, `/readyz`, `/metrics`, `/swagger.json`
+- `6` application endpoints from `TemplateService`
+
 - `GET /healthz`
 - `GET /readyz`
 - `GET /metrics`
@@ -79,6 +90,15 @@ flowchart LR
 - `GET /api/v1/admin/ping`
 - `GET /api/v1/operator/ping`
 - `GET /api/v1/viewer/ping`
+
+The same template also serves `6` native gRPC methods:
+
+- `PublicPing`
+- `Login`
+- `Me`
+- `AdminPing`
+- `OperatorPing`
+- `ViewerPing`
 
 HTTP JSON is served by Gin + grpc-gateway on port `8080` by default. Native gRPC is served on port `9090` by default using the same service handlers and auth/RBAC rules.
 

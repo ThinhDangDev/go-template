@@ -25,6 +25,13 @@ The generated project includes:
 - structured JSON logging
 - Docker + docker-compose
 
+The generated project currently serves:
+
+- `10` HTTP endpoints total
+- `4` infrastructure endpoints: `/healthz`, `/readyz`, `/metrics`, `/swagger.json`
+- `6` application HTTP endpoints exposed through Gin + grpc-gateway
+- `6` native gRPC methods in `TemplateService`
+
 ## Template Flow
 
 ```mermaid
@@ -75,6 +82,7 @@ ADMIN_PASSWORD=ChangeMe123!
 Then run:
 
 ```bash
+make proto
 make migrate-up
 make seed-admin
 make run

@@ -40,6 +40,7 @@ func newInitCmd() *cobra.Command {
 			fmt.Println("next steps:")
 			fmt.Printf("  cd %s\n", targetDir)
 			fmt.Println("  cp .env.example .env")
+			fmt.Println("  make proto")
 			fmt.Println("  set JWT_SECRET and ADMIN_PASSWORD in .env")
 			fmt.Println("  make migrate-up")
 			fmt.Println("  make seed-admin")
