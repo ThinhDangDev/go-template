@@ -38,6 +38,8 @@ func InitProject(cfg Config) error {
 		"__MODULE_PATH__", cfg.ModulePath,
 		"__PROJECT_NAME__", cfg.ProjectName,
 		"__PROJECT_NAME_SNAKE__", toSnakeCase(cfg.ProjectName),
+		"internal/boilerplate/", "internal/",
+		"internal/boilerplate", "internal",
 	)
 
 	return fs.WalkDir(templateFS, templateRoot, func(path string, d fs.DirEntry, err error) error {
@@ -50,6 +52,7 @@ func InitProject(cfg Config) error {
 		if rel == "" {
 			return nil
 		}
+		rel = rewriteTemplatePath(rel)
 		if rel == "go.mod.tmpl" {
 			rel = "go.mod"
 		}
@@ -75,6 +78,17 @@ func InitProject(cfg Config) error {
 		}
 		return os.WriteFile(dstPath, []byte(rendered), mode)
 	})
+}
+
+func rewriteTemplatePath(rel string) string {
+	if strings.HasPrefix(rel, "internal/boilerplate/") {
+		return "internal/" + strings.TrimPrefix(rel, "internal/boilerplate/")
+	}
+	if rel == "internal/boilerplate" {
+		return "internal"
+	}
+
+	return rel
 }
 
 func validateConfig(cfg Config) error {

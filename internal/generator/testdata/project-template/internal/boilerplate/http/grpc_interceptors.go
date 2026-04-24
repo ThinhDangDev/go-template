@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"strings"
 
+	"__MODULE_PATH__/internal/pkg/authctx"
+
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -68,7 +70,7 @@ func (s *Server) AuthUnaryInterceptor() grpc.UnaryServerInterceptor {
 			return nil, status.Error(codes.PermissionDenied, "forbidden")
 		}
 
-		ctx = withAuthContext(ctx, claims, user)
+		ctx = authctx.WithAuth(ctx, claims, user)
 		return handler(ctx, req)
 	}
 }

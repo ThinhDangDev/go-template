@@ -1,4 +1,4 @@
-package store
+package repository
 
 import (
 	"context"
@@ -8,33 +8,23 @@ import (
 	"time"
 
 	"__MODULE_PATH__/internal/boilerplate/telemetry"
+	"__MODULE_PATH__/internal/domain"
+	"__MODULE_PATH__/internal/domain/entity"
 )
 
-var ErrUserNotFound = errors.New("user not found")
-
-type User struct {
-	ID           string    `json:"id"`
-	Email        string    `json:"email"`
-	PasswordHash string    `json:"-"`
-	Role         string    `json:"role"`
-	IsActive     bool      `json:"is_active"`
-	CreatedAt    time.Time `json:"created_at"`
-	UpdatedAt    time.Time `json:"updated_at"`
-}
-
-type UserStore struct {
+type userRepository struct {
 	db *sql.DB
 }
 
-func NewUserStore(db *sql.DB) *UserStore {
-	return &UserStore{db: db}
+func NewUserRepository(db *sql.DB) *userRepository {
+	return &userRepository{db: db}
 }
 
-func (s *UserStore) GetByEmail(ctx context.Context, email string) (*User, error) {
+func (r *userRepository) GetByEmail(ctx context.Context, email string) (*entity.User, error) {
 	email = strings.ToLower(strings.TrimSpace(email))
 	start := time.Now()
 
-	row := s.db.QueryRowContext(
+	row := r.db.QueryRowContext(
 		ctx,
 		`SELECT id::text, email, password_hash, role, is_active, created_at, updated_at
 		FROM users
@@ -43,7 +33,7 @@ func (s *UserStore) GetByEmail(ctx context.Context, email string) (*User, error)
 		email,
 	)
 
-	var user User
+	var user entity.User
 	err := row.Scan(
 		&user.ID,
 		&user.Email,
@@ -56,7 +46,7 @@ func (s *UserStore) GetByEmail(ctx context.Context, email string) (*User, error)
 	telemetry.ObserveDBQuery("users.get_by_email", time.Since(start), err)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return nil, ErrUserNotFound
+			return nil, domain.ErrUserNotFound
 		}
 		return nil, err
 	}
@@ -64,10 +54,10 @@ func (s *UserStore) GetByEmail(ctx context.Context, email string) (*User, error)
 	return &user, nil
 }
 
-func (s *UserStore) GetByID(ctx context.Context, id string) (*User, error) {
+func (r *userRepository) GetByID(ctx context.Context, id string) (*entity.User, error) {
 	start := time.Now()
 
-	row := s.db.QueryRowContext(
+	row := r.db.QueryRowContext(
 		ctx,
 		`SELECT id::text, email, password_hash, role, is_active, created_at, updated_at
 		FROM users
@@ -76,7 +66,7 @@ func (s *UserStore) GetByID(ctx context.Context, id string) (*User, error) {
 		id,
 	)
 
-	var user User
+	var user entity.User
 	err := row.Scan(
 		&user.ID,
 		&user.Email,
@@ -89,7 +79,7 @@ func (s *UserStore) GetByID(ctx context.Context, id string) (*User, error) {
 	telemetry.ObserveDBQuery("users.get_by_id", time.Since(start), err)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return nil, ErrUserNotFound
+			return nil, domain.ErrUserNotFound
 		}
 		return nil, err
 	}
@@ -97,11 +87,11 @@ func (s *UserStore) GetByID(ctx context.Context, id string) (*User, error) {
 	return &user, nil
 }
 
-func (s *UserStore) UpsertAdmin(ctx context.Context, email, passwordHash, role string) (*User, error) {
+func (r *userRepository) UpsertAdmin(ctx context.Context, email, passwordHash, role string) (*entity.User, error) {
 	email = strings.ToLower(strings.TrimSpace(email))
 	start := time.Now()
 
-	row := s.db.QueryRowContext(
+	row := r.db.QueryRowContext(
 		ctx,
 		`INSERT INTO users (email, password_hash, role, is_active)
 		VALUES ($1, $2, $3, TRUE)
@@ -116,7 +106,7 @@ func (s *UserStore) UpsertAdmin(ctx context.Context, email, passwordHash, role s
 		role,
 	)
 
-	var user User
+	var user entity.User
 	err := row.Scan(
 		&user.ID,
 		&user.Email,

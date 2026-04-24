@@ -10,8 +10,11 @@ import (
 
 	"__MODULE_PATH__/internal/boilerplate/auth"
 	"__MODULE_PATH__/internal/boilerplate/config"
-	"__MODULE_PATH__/internal/boilerplate/store"
 	"__MODULE_PATH__/internal/boilerplate/telemetry"
+	repositorycontract "__MODULE_PATH__/internal/domain/interface/repository"
+	usecasecontract "__MODULE_PATH__/internal/domain/interface/usecase"
+	"__MODULE_PATH__/internal/repository"
+	"__MODULE_PATH__/internal/usecase"
 
 	_ "github.com/lib/pq"
 )
@@ -20,9 +23,11 @@ type Runtime struct {
 	Config        config.Config
 	Logger        *slog.Logger
 	DB            *sql.DB
-	Users         *store.UserStore
+	Users         repositorycontract.UserRepository
 	Tokens        *auth.TokenManager
 	Authorizer    *auth.Authorizer
+	AuthUseCase   usecasecontract.AuthUseCase
+	SystemUseCase usecasecontract.SystemUseCase
 	traceShutdown func(context.Context) error
 }
 
@@ -75,15 +80,22 @@ func Bootstrap(ctx context.Context) (*Runtime, error) {
 		return nil, err
 	}
 
+	userRepository := repository.NewUserRepository(db)
+	tokenManager := auth.NewTokenManager(cfg.JWTSecret, cfg.JWTIssuer, cfg.JWTAccessTTL)
+	authUseCase := usecase.NewAuthUseCase(userRepository, tokenManager, logger, cfg.JWTAccessTTL)
+	systemUseCase := usecase.NewSystemUseCase()
+
 	telemetry.MarkAppInfo(cfg.ServiceName, cfg.Version, cfg.Environment)
 
 	return &Runtime{
 		Config:        cfg,
 		Logger:        logger,
 		DB:            db,
-		Users:         store.NewUserStore(db),
-		Tokens:        auth.NewTokenManager(cfg.JWTSecret, cfg.JWTIssuer, cfg.JWTAccessTTL),
+		Users:         userRepository,
+		Tokens:        tokenManager,
 		Authorizer:    authorizer,
+		AuthUseCase:   authUseCase,
+		SystemUseCase: systemUseCase,
 		traceShutdown: traceShutdown,
 	}, nil
 }

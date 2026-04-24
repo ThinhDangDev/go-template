@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"time"
 
+	"__MODULE_PATH__/internal/api/handler"
 	"__MODULE_PATH__/internal/boilerplate/app"
 	pb "__MODULE_PATH__/protogen"
 
@@ -16,14 +17,14 @@ import (
 
 type Server struct {
 	runtime         *app.Runtime
-	templateService *TemplateService
+	templateService pb.TemplateServiceServer
 	gatewayHandler  http.Handler
 }
 
 func NewServer(runtime *app.Runtime) *Server {
 	return &Server{
 		runtime:         runtime,
-		templateService: NewTemplateService(runtime),
+		templateService: handler.NewTemplateService(runtime.AuthUseCase, runtime.SystemUseCase),
 	}
 }
 

@@ -44,8 +44,16 @@ func TestInitProject(t *testing.T) {
 	if err != nil {
 		t.Fatalf("read cmd/main.go: %v", err)
 	}
-	if !strings.Contains(string(cmdMain), `"github.com/acme/sample-api/internal/boilerplate/cli"`) {
+	if !strings.Contains(string(cmdMain), `"github.com/acme/sample-api/internal/cli"`) {
 		t.Fatalf("cmd/main.go module import was not replaced")
+	}
+
+	if _, err := os.Stat(filepath.Join(targetDir, "internal", "boilerplate")); !os.IsNotExist(err) {
+		t.Fatalf("internal/boilerplate should not exist in generated project")
+	}
+
+	if _, err := os.Stat(filepath.Join(targetDir, "internal", "cli", "root.go")); err != nil {
+		t.Fatalf("internal/cli/root.go was not generated: %v", err)
 	}
 
 	if _, err := os.Stat(filepath.Join(targetDir, ".gitignore")); err != nil {
