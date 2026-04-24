@@ -9,7 +9,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/ThinhDangDev/go-template/internal/boilerplate/config"
+	"__MODULE_PATH__/internal/boilerplate/config"
 
 	migrate "github.com/golang-migrate/migrate/v4"
 	_ "github.com/golang-migrate/migrate/v4/database/postgres"

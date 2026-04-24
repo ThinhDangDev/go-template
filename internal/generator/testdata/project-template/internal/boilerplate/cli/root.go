@@ -8,7 +8,7 @@ import (
 )
 
 var rootCmd = &cobra.Command{
-	Use:   "go-template",
+	Use:   "__PROJECT_NAME__",
 	Short: "CLI-first Go backend template",
 }
 

@@ -7,7 +7,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/ThinhDangDev/go-template/internal/boilerplate/telemetry"
+	"__MODULE_PATH__/internal/boilerplate/telemetry"
 )
 
 var ErrUserNotFound = errors.New("user not found")

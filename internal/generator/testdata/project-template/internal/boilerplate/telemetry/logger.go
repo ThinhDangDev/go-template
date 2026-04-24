@@ -7,7 +7,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/ThinhDangDev/go-template/internal/boilerplate/config"
+	"__MODULE_PATH__/internal/boilerplate/config"
 
 	"gopkg.in/natefinch/lumberjack.v2"
 )

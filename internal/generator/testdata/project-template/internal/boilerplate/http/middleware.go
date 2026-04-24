@@ -6,9 +6,9 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/ThinhDangDev/go-template/internal/boilerplate/auth"
-	"github.com/ThinhDangDev/go-template/internal/boilerplate/store"
-	"github.com/ThinhDangDev/go-template/internal/boilerplate/telemetry"
+	"__MODULE_PATH__/internal/boilerplate/auth"
+	"__MODULE_PATH__/internal/boilerplate/store"
+	"__MODULE_PATH__/internal/boilerplate/telemetry"
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"

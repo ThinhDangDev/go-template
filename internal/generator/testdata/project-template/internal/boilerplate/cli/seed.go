@@ -4,8 +4,8 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/ThinhDangDev/go-template/internal/boilerplate/app"
-	"github.com/ThinhDangDev/go-template/internal/boilerplate/auth"
+	"__MODULE_PATH__/internal/boilerplate/app"
+	"__MODULE_PATH__/internal/boilerplate/auth"
 
 	"github.com/spf13/cobra"
 )

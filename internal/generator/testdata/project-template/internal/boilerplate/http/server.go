@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/ThinhDangDev/go-template/internal/boilerplate/app"
+	"__MODULE_PATH__/internal/boilerplate/app"
 
 	"github.com/gin-gonic/gin"
 	"github.com/prometheus/client_golang/prometheus/promhttp"

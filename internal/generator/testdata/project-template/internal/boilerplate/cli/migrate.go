@@ -4,8 +4,8 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/ThinhDangDev/go-template/internal/boilerplate/app"
-	"github.com/ThinhDangDev/go-template/internal/boilerplate/config"
+	"__MODULE_PATH__/internal/boilerplate/app"
+	"__MODULE_PATH__/internal/boilerplate/config"
 
 	migrate "github.com/golang-migrate/migrate/v4"
 	"github.com/spf13/cobra"

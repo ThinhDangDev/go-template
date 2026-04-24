@@ -8,8 +8,8 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/ThinhDangDev/go-template/internal/boilerplate/app"
-	transport "github.com/ThinhDangDev/go-template/internal/boilerplate/http"
+	"__MODULE_PATH__/internal/boilerplate/app"
+	transport "__MODULE_PATH__/internal/boilerplate/http"
 
 	"github.com/spf13/cobra"
 )
