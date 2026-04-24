@@ -2,10 +2,33 @@
 
 `go-template` is a generator CLI for bootstrapping Go backend services.
 
-## Usage
+## Install
+
+Install from Go module:
 
 ```bash
 go install github.com/ThinhDangDev/go-template/cmd/go-template@latest
+```
+
+Install from local source:
+
+```bash
+git clone git@github.com:ThinhDangDev/go-template.git
+cd go-template
+make install
+```
+
+`make install` installs the binary into `${GOBIN}` if set, otherwise `$(go env GOPATH)/bin`.
+
+If `go-template` is not found after install, add your Go bin directory to `PATH`:
+
+```bash
+export PATH="$(go env GOPATH)/bin:$PATH"
+```
+
+## Usage
+
+```bash
 go-template init my-service
 go-template init my-service --module github.com/acme/my-service
 ```

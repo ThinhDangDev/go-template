@@ -1,4 +1,6 @@
-.PHONY: help build test fmt lint smoke
+INSTALL_DIR ?= $(if $(GOBIN),$(GOBIN),$(shell go env GOPATH)/bin)
+
+.PHONY: help build install test fmt lint smoke
 
 help: ## Display available targets
 	@grep -h -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[36m%-20s\033[0m %s\n", $$1, $$2}'
@@ -6,6 +8,11 @@ help: ## Display available targets
 build: ## Build the generator binary
 	@mkdir -p bin
 	go build -o ./bin/go-template ./cmd/go-template
+
+install: ## Install the generator binary into GOBIN or GOPATH/bin
+	@mkdir -p "$(INSTALL_DIR)"
+	go build -o "$(INSTALL_DIR)/go-template" ./cmd/go-template
+	@echo "installed $(INSTALL_DIR)/go-template"
 
 test: ## Run unit tests
 	go test ./...
