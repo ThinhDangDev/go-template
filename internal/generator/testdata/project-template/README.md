@@ -6,8 +6,9 @@
 - Protocol Buffers + grpc-gateway
 - native gRPC server bootstrap
 - manual SQL migrations with `up/down/status/create`
-- JWT authentication
+- JWT authentication with public register/login
 - Casbin RBAC
+- admin user access management APIs
 - structured JSON logging
 - Prometheus metrics
 - OpenTelemetry tracing
@@ -75,32 +76,42 @@ flowchart LR
 
 ## Routes
 
-This template currently serves `10` HTTP endpoints total:
+This template currently serves `14` HTTP endpoints total:
 
 - `4` infrastructure endpoints: `/healthz`, `/readyz`, `/metrics`, `/swagger.json`
-- `6` application endpoints from `TemplateService`
+- `10` application endpoints from `TemplateService`
 
 - `GET /healthz`
 - `GET /readyz`
 - `GET /metrics`
 - `GET /swagger.json`
 - `GET /api/v1/public/ping`
+- `POST /api/v1/auth/register`
 - `POST /api/v1/auth/login`
 - `GET /api/v1/auth/me`
 - `GET /api/v1/admin/ping`
+- `GET /api/v1/admin/users`
+- `GET /api/v1/admin/roles`
+- `PATCH /api/v1/admin/users/:user_id/access`
 - `GET /api/v1/operator/ping`
 - `GET /api/v1/viewer/ping`
 
-The same template also serves `6` native gRPC methods:
+The same template also serves `10` native gRPC methods:
 
 - `PublicPing`
+- `Register`
 - `Login`
 - `Me`
 - `AdminPing`
+- `ListUsers`
+- `ListRoles`
+- `UpdateUserAccess`
 - `OperatorPing`
 - `ViewerPing`
 
 HTTP JSON is served by Gin + grpc-gateway on port `8080` by default. Native gRPC is served on port `9090` by default using the same service handlers and auth/RBAC rules.
+
+New users can self-register through `POST /api/v1/auth/register` and receive a JWT immediately with the default `viewer` role. Admins can then inspect users, inspect supported roles, and update a user's `role` plus `is_active` flag through the admin access APIs.
 
 ## Project Layout
 

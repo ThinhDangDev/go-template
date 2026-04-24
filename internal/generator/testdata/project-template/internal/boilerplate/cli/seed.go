@@ -6,6 +6,7 @@ import (
 
 	"__MODULE_PATH__/internal/boilerplate/app"
 	"__MODULE_PATH__/internal/boilerplate/auth"
+	"__MODULE_PATH__/internal/domain/entity"
 
 	"github.com/spf13/cobra"
 )
@@ -47,6 +48,10 @@ func newSeedCmd() *cobra.Command {
 			}
 			if role == "" {
 				role = runtime.Config.AdminRole
+			}
+			role = entity.NormalizeRole(role)
+			if !entity.IsValidRole(role) {
+				return fmt.Errorf("invalid role %q", role)
 			}
 			if password == "" {
 				return fmt.Errorf("admin password is required; set ADMIN_PASSWORD or pass --password")

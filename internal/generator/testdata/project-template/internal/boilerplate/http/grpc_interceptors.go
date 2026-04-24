@@ -20,10 +20,17 @@ type grpcRouteBinding struct {
 }
 
 var grpcRouteBindings = map[string]grpcRouteBinding{
-	"/boilerplate.v1.TemplateService/PublicPing":   {Public: true},
-	"/boilerplate.v1.TemplateService/Login":        {Public: true},
-	"/boilerplate.v1.TemplateService/Me":           {Path: "/api/v1/auth/me", Method: "GET"},
-	"/boilerplate.v1.TemplateService/AdminPing":    {Path: "/api/v1/admin/ping", Method: "GET"},
+	"/boilerplate.v1.TemplateService/PublicPing": {Public: true},
+	"/boilerplate.v1.TemplateService/Register":   {Public: true},
+	"/boilerplate.v1.TemplateService/Login":      {Public: true},
+	"/boilerplate.v1.TemplateService/Me":         {Path: "/api/v1/auth/me", Method: "GET"},
+	"/boilerplate.v1.TemplateService/AdminPing":  {Path: "/api/v1/admin/ping", Method: "GET"},
+	"/boilerplate.v1.TemplateService/ListUsers":  {Path: "/api/v1/admin/users", Method: "GET"},
+	"/boilerplate.v1.TemplateService/ListRoles":  {Path: "/api/v1/admin/roles", Method: "GET"},
+	"/boilerplate.v1.TemplateService/UpdateUserAccess": {
+		Path:   "/api/v1/admin/users/:user_id/access",
+		Method: "PATCH",
+	},
 	"/boilerplate.v1.TemplateService/OperatorPing": {Path: "/api/v1/operator/ping", Method: "GET"},
 	"/boilerplate.v1.TemplateService/ViewerPing":   {Path: "/api/v1/viewer/ping", Method: "GET"},
 }

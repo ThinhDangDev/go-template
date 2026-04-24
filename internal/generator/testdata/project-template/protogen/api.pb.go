@@ -204,6 +204,58 @@ func (x *LoginRequest) GetPassword() string {
 	return ""
 }
 
+type RegisterRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Email         string                 `protobuf:"bytes,1,opt,name=email,proto3" json:"email,omitempty"`
+	Password      string                 `protobuf:"bytes,2,opt,name=password,proto3" json:"password,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *RegisterRequest) Reset() {
+	*x = RegisterRequest{}
+	mi := &file_api_proto_msgTypes[3]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *RegisterRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*RegisterRequest) ProtoMessage() {}
+
+func (x *RegisterRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_api_proto_msgTypes[3]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use RegisterRequest.ProtoReflect.Descriptor instead.
+func (*RegisterRequest) Descriptor() ([]byte, []int) {
+	return file_api_proto_rawDescGZIP(), []int{3}
+}
+
+func (x *RegisterRequest) GetEmail() string {
+	if x != nil {
+		return x.Email
+	}
+	return ""
+}
+
+func (x *RegisterRequest) GetPassword() string {
+	if x != nil {
+		return x.Password
+	}
+	return ""
+}
+
 type LoginResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	AccessToken   string                 `protobuf:"bytes,1,opt,name=access_token,json=accessToken,proto3" json:"access_token,omitempty"`
@@ -216,7 +268,7 @@ type LoginResponse struct {
 
 func (x *LoginResponse) Reset() {
 	*x = LoginResponse{}
-	mi := &file_api_proto_msgTypes[3]
+	mi := &file_api_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -228,7 +280,7 @@ func (x *LoginResponse) String() string {
 func (*LoginResponse) ProtoMessage() {}
 
 func (x *LoginResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_api_proto_msgTypes[3]
+	mi := &file_api_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -241,7 +293,7 @@ func (x *LoginResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use LoginResponse.ProtoReflect.Descriptor instead.
 func (*LoginResponse) Descriptor() ([]byte, []int) {
-	return file_api_proto_rawDescGZIP(), []int{3}
+	return file_api_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *LoginResponse) GetAccessToken() string {
@@ -281,7 +333,7 @@ type MeResponse struct {
 
 func (x *MeResponse) Reset() {
 	*x = MeResponse{}
-	mi := &file_api_proto_msgTypes[4]
+	mi := &file_api_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -293,7 +345,7 @@ func (x *MeResponse) String() string {
 func (*MeResponse) ProtoMessage() {}
 
 func (x *MeResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_api_proto_msgTypes[4]
+	mi := &file_api_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -306,7 +358,7 @@ func (x *MeResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MeResponse.ProtoReflect.Descriptor instead.
 func (*MeResponse) Descriptor() ([]byte, []int) {
-	return file_api_proto_rawDescGZIP(), []int{4}
+	return file_api_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *MeResponse) GetUser() *User {
@@ -326,7 +378,7 @@ type RolePingResponse struct {
 
 func (x *RolePingResponse) Reset() {
 	*x = RolePingResponse{}
-	mi := &file_api_proto_msgTypes[5]
+	mi := &file_api_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -338,7 +390,7 @@ func (x *RolePingResponse) String() string {
 func (*RolePingResponse) ProtoMessage() {}
 
 func (x *RolePingResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_api_proto_msgTypes[5]
+	mi := &file_api_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -351,7 +403,7 @@ func (x *RolePingResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RolePingResponse.ProtoReflect.Descriptor instead.
 func (*RolePingResponse) Descriptor() ([]byte, []int) {
-	return file_api_proto_rawDescGZIP(), []int{5}
+	return file_api_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *RolePingResponse) GetMessage() string {
@@ -362,6 +414,250 @@ func (x *RolePingResponse) GetMessage() string {
 }
 
 func (x *RolePingResponse) GetUser() *User {
+	if x != nil {
+		return x.User
+	}
+	return nil
+}
+
+type RoleOption struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Name          string                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	Description   string                 `protobuf:"bytes,2,opt,name=description,proto3" json:"description,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *RoleOption) Reset() {
+	*x = RoleOption{}
+	mi := &file_api_proto_msgTypes[7]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *RoleOption) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*RoleOption) ProtoMessage() {}
+
+func (x *RoleOption) ProtoReflect() protoreflect.Message {
+	mi := &file_api_proto_msgTypes[7]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use RoleOption.ProtoReflect.Descriptor instead.
+func (*RoleOption) Descriptor() ([]byte, []int) {
+	return file_api_proto_rawDescGZIP(), []int{7}
+}
+
+func (x *RoleOption) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *RoleOption) GetDescription() string {
+	if x != nil {
+		return x.Description
+	}
+	return ""
+}
+
+type ListUsersResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Users         []*User                `protobuf:"bytes,1,rep,name=users,proto3" json:"users,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ListUsersResponse) Reset() {
+	*x = ListUsersResponse{}
+	mi := &file_api_proto_msgTypes[8]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListUsersResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListUsersResponse) ProtoMessage() {}
+
+func (x *ListUsersResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_api_proto_msgTypes[8]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListUsersResponse.ProtoReflect.Descriptor instead.
+func (*ListUsersResponse) Descriptor() ([]byte, []int) {
+	return file_api_proto_rawDescGZIP(), []int{8}
+}
+
+func (x *ListUsersResponse) GetUsers() []*User {
+	if x != nil {
+		return x.Users
+	}
+	return nil
+}
+
+type ListRolesResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Roles         []*RoleOption          `protobuf:"bytes,1,rep,name=roles,proto3" json:"roles,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ListRolesResponse) Reset() {
+	*x = ListRolesResponse{}
+	mi := &file_api_proto_msgTypes[9]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListRolesResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListRolesResponse) ProtoMessage() {}
+
+func (x *ListRolesResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_api_proto_msgTypes[9]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListRolesResponse.ProtoReflect.Descriptor instead.
+func (*ListRolesResponse) Descriptor() ([]byte, []int) {
+	return file_api_proto_rawDescGZIP(), []int{9}
+}
+
+func (x *ListRolesResponse) GetRoles() []*RoleOption {
+	if x != nil {
+		return x.Roles
+	}
+	return nil
+}
+
+type UpdateUserAccessRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	UserId        string                 `protobuf:"bytes,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
+	Role          string                 `protobuf:"bytes,2,opt,name=role,proto3" json:"role,omitempty"`
+	IsActive      bool                   `protobuf:"varint,3,opt,name=is_active,json=isActive,proto3" json:"is_active,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *UpdateUserAccessRequest) Reset() {
+	*x = UpdateUserAccessRequest{}
+	mi := &file_api_proto_msgTypes[10]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *UpdateUserAccessRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UpdateUserAccessRequest) ProtoMessage() {}
+
+func (x *UpdateUserAccessRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_api_proto_msgTypes[10]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UpdateUserAccessRequest.ProtoReflect.Descriptor instead.
+func (*UpdateUserAccessRequest) Descriptor() ([]byte, []int) {
+	return file_api_proto_rawDescGZIP(), []int{10}
+}
+
+func (x *UpdateUserAccessRequest) GetUserId() string {
+	if x != nil {
+		return x.UserId
+	}
+	return ""
+}
+
+func (x *UpdateUserAccessRequest) GetRole() string {
+	if x != nil {
+		return x.Role
+	}
+	return ""
+}
+
+func (x *UpdateUserAccessRequest) GetIsActive() bool {
+	if x != nil {
+		return x.IsActive
+	}
+	return false
+}
+
+type UpdateUserAccessResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	User          *User                  `protobuf:"bytes,1,opt,name=user,proto3" json:"user,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *UpdateUserAccessResponse) Reset() {
+	*x = UpdateUserAccessResponse{}
+	mi := &file_api_proto_msgTypes[11]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *UpdateUserAccessResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UpdateUserAccessResponse) ProtoMessage() {}
+
+func (x *UpdateUserAccessResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_api_proto_msgTypes[11]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UpdateUserAccessResponse.ProtoReflect.Descriptor instead.
+func (*UpdateUserAccessResponse) Descriptor() ([]byte, []int) {
+	return file_api_proto_rawDescGZIP(), []int{11}
+}
+
+func (x *UpdateUserAccessResponse) GetUser() *User {
 	if x != nil {
 		return x.User
 	}
@@ -386,6 +682,9 @@ const file_api_proto_rawDesc = "" +
 	"updated_at\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampR\tupdatedAt\"@\n" +
 	"\fLoginRequest\x12\x14\n" +
 	"\x05email\x18\x01 \x01(\tR\x05email\x12\x1a\n" +
+	"\bpassword\x18\x02 \x01(\tR\bpassword\"C\n" +
+	"\x0fRegisterRequest\x12\x14\n" +
+	"\x05email\x18\x01 \x01(\tR\x05email\x12\x1a\n" +
 	"\bpassword\x18\x02 \x01(\tR\bpassword\"\x9a\x01\n" +
 	"\rLoginResponse\x12!\n" +
 	"\faccess_token\x18\x01 \x01(\tR\vaccessToken\x12\x1d\n" +
@@ -399,13 +698,31 @@ const file_api_proto_rawDesc = "" +
 	"\x04user\x18\x01 \x01(\v2\x14.boilerplate.v1.UserR\x04user\"V\n" +
 	"\x10RolePingResponse\x12\x18\n" +
 	"\amessage\x18\x01 \x01(\tR\amessage\x12(\n" +
-	"\x04user\x18\x02 \x01(\v2\x14.boilerplate.v1.UserR\x04user2\xdb\x04\n" +
+	"\x04user\x18\x02 \x01(\v2\x14.boilerplate.v1.UserR\x04user\"B\n" +
+	"\n" +
+	"RoleOption\x12\x12\n" +
+	"\x04name\x18\x01 \x01(\tR\x04name\x12 \n" +
+	"\vdescription\x18\x02 \x01(\tR\vdescription\"?\n" +
+	"\x11ListUsersResponse\x12*\n" +
+	"\x05users\x18\x01 \x03(\v2\x14.boilerplate.v1.UserR\x05users\"E\n" +
+	"\x11ListRolesResponse\x120\n" +
+	"\x05roles\x18\x01 \x03(\v2\x1a.boilerplate.v1.RoleOptionR\x05roles\"c\n" +
+	"\x17UpdateUserAccessRequest\x12\x17\n" +
+	"\auser_id\x18\x01 \x01(\tR\x06userId\x12\x12\n" +
+	"\x04role\x18\x02 \x01(\tR\x04role\x12\x1b\n" +
+	"\tis_active\x18\x03 \x01(\bR\bisActive\"D\n" +
+	"\x18UpdateUserAccessResponse\x12(\n" +
+	"\x04user\x18\x01 \x01(\v2\x14.boilerplate.v1.UserR\x04user2\xac\b\n" +
 	"\x0fTemplateService\x12_\n" +
 	"\n" +
-	"PublicPing\x12\x16.google.protobuf.Empty\x1a\x1c.boilerplate.v1.PingResponse\"\x1b\x82\xd3\xe4\x93\x02\x15\x12\x13/api/v1/public/ping\x12c\n" +
+	"PublicPing\x12\x16.google.protobuf.Empty\x1a\x1c.boilerplate.v1.PingResponse\"\x1b\x82\xd3\xe4\x93\x02\x15\x12\x13/api/v1/public/ping\x12l\n" +
+	"\bRegister\x12\x1f.boilerplate.v1.RegisterRequest\x1a\x1d.boilerplate.v1.LoginResponse\" \x82\xd3\xe4\x93\x02\x1a:\x01*\"\x15/api/v1/auth/register\x12c\n" +
 	"\x05Login\x12\x1c.boilerplate.v1.LoginRequest\x1a\x1d.boilerplate.v1.LoginResponse\"\x1d\x82\xd3\xe4\x93\x02\x17:\x01*\"\x12/api/v1/auth/login\x12Q\n" +
 	"\x02Me\x12\x16.google.protobuf.Empty\x1a\x1a.boilerplate.v1.MeResponse\"\x17\x82\xd3\xe4\x93\x02\x11\x12\x0f/api/v1/auth/me\x12a\n" +
-	"\tAdminPing\x12\x16.google.protobuf.Empty\x1a .boilerplate.v1.RolePingResponse\"\x1a\x82\xd3\xe4\x93\x02\x14\x12\x12/api/v1/admin/ping\x12g\n" +
+	"\tAdminPing\x12\x16.google.protobuf.Empty\x1a .boilerplate.v1.RolePingResponse\"\x1a\x82\xd3\xe4\x93\x02\x14\x12\x12/api/v1/admin/ping\x12c\n" +
+	"\tListUsers\x12\x16.google.protobuf.Empty\x1a!.boilerplate.v1.ListUsersResponse\"\x1b\x82\xd3\xe4\x93\x02\x15\x12\x13/api/v1/admin/users\x12c\n" +
+	"\tListRoles\x12\x16.google.protobuf.Empty\x1a!.boilerplate.v1.ListRolesResponse\"\x1b\x82\xd3\xe4\x93\x02\x15\x12\x13/api/v1/admin/roles\x12\x96\x01\n" +
+	"\x10UpdateUserAccess\x12'.boilerplate.v1.UpdateUserAccessRequest\x1a(.boilerplate.v1.UpdateUserAccessResponse\"/\x82\xd3\xe4\x93\x02):\x01*2$/api/v1/admin/users/{user_id}/access\x12g\n" +
 	"\fOperatorPing\x12\x16.google.protobuf.Empty\x1a .boilerplate.v1.RolePingResponse\"\x1d\x82\xd3\xe4\x93\x02\x17\x12\x15/api/v1/operator/ping\x12c\n" +
 	"\n" +
 	"ViewerPing\x12\x16.google.protobuf.Empty\x1a .boilerplate.v1.RolePingResponse\"\x1b\x82\xd3\xe4\x93\x02\x15\x12\x13/api/v1/viewer/pingB#Z!__MODULE_PATH__/protogen;protogenb\x06proto3"
@@ -422,40 +739,57 @@ func file_api_proto_rawDescGZIP() []byte {
 	return file_api_proto_rawDescData
 }
 
-var file_api_proto_msgTypes = make([]protoimpl.MessageInfo, 6)
+var file_api_proto_msgTypes = make([]protoimpl.MessageInfo, 12)
 var file_api_proto_goTypes = []any{
-	(*PingResponse)(nil),          // 0: boilerplate.v1.PingResponse
-	(*User)(nil),                  // 1: boilerplate.v1.User
-	(*LoginRequest)(nil),          // 2: boilerplate.v1.LoginRequest
-	(*LoginResponse)(nil),         // 3: boilerplate.v1.LoginResponse
-	(*MeResponse)(nil),            // 4: boilerplate.v1.MeResponse
-	(*RolePingResponse)(nil),      // 5: boilerplate.v1.RolePingResponse
-	(*timestamppb.Timestamp)(nil), // 6: google.protobuf.Timestamp
-	(*emptypb.Empty)(nil),         // 7: google.protobuf.Empty
+	(*PingResponse)(nil),             // 0: boilerplate.v1.PingResponse
+	(*User)(nil),                     // 1: boilerplate.v1.User
+	(*LoginRequest)(nil),             // 2: boilerplate.v1.LoginRequest
+	(*RegisterRequest)(nil),          // 3: boilerplate.v1.RegisterRequest
+	(*LoginResponse)(nil),            // 4: boilerplate.v1.LoginResponse
+	(*MeResponse)(nil),               // 5: boilerplate.v1.MeResponse
+	(*RolePingResponse)(nil),         // 6: boilerplate.v1.RolePingResponse
+	(*RoleOption)(nil),               // 7: boilerplate.v1.RoleOption
+	(*ListUsersResponse)(nil),        // 8: boilerplate.v1.ListUsersResponse
+	(*ListRolesResponse)(nil),        // 9: boilerplate.v1.ListRolesResponse
+	(*UpdateUserAccessRequest)(nil),  // 10: boilerplate.v1.UpdateUserAccessRequest
+	(*UpdateUserAccessResponse)(nil), // 11: boilerplate.v1.UpdateUserAccessResponse
+	(*timestamppb.Timestamp)(nil),    // 12: google.protobuf.Timestamp
+	(*emptypb.Empty)(nil),            // 13: google.protobuf.Empty
 }
 var file_api_proto_depIdxs = []int32{
-	6,  // 0: boilerplate.v1.User.created_at:type_name -> google.protobuf.Timestamp
-	6,  // 1: boilerplate.v1.User.updated_at:type_name -> google.protobuf.Timestamp
+	12, // 0: boilerplate.v1.User.created_at:type_name -> google.protobuf.Timestamp
+	12, // 1: boilerplate.v1.User.updated_at:type_name -> google.protobuf.Timestamp
 	1,  // 2: boilerplate.v1.LoginResponse.user:type_name -> boilerplate.v1.User
 	1,  // 3: boilerplate.v1.MeResponse.user:type_name -> boilerplate.v1.User
 	1,  // 4: boilerplate.v1.RolePingResponse.user:type_name -> boilerplate.v1.User
-	7,  // 5: boilerplate.v1.TemplateService.PublicPing:input_type -> google.protobuf.Empty
-	2,  // 6: boilerplate.v1.TemplateService.Login:input_type -> boilerplate.v1.LoginRequest
-	7,  // 7: boilerplate.v1.TemplateService.Me:input_type -> google.protobuf.Empty
-	7,  // 8: boilerplate.v1.TemplateService.AdminPing:input_type -> google.protobuf.Empty
-	7,  // 9: boilerplate.v1.TemplateService.OperatorPing:input_type -> google.protobuf.Empty
-	7,  // 10: boilerplate.v1.TemplateService.ViewerPing:input_type -> google.protobuf.Empty
-	0,  // 11: boilerplate.v1.TemplateService.PublicPing:output_type -> boilerplate.v1.PingResponse
-	3,  // 12: boilerplate.v1.TemplateService.Login:output_type -> boilerplate.v1.LoginResponse
-	4,  // 13: boilerplate.v1.TemplateService.Me:output_type -> boilerplate.v1.MeResponse
-	5,  // 14: boilerplate.v1.TemplateService.AdminPing:output_type -> boilerplate.v1.RolePingResponse
-	5,  // 15: boilerplate.v1.TemplateService.OperatorPing:output_type -> boilerplate.v1.RolePingResponse
-	5,  // 16: boilerplate.v1.TemplateService.ViewerPing:output_type -> boilerplate.v1.RolePingResponse
-	11, // [11:17] is the sub-list for method output_type
-	5,  // [5:11] is the sub-list for method input_type
-	5,  // [5:5] is the sub-list for extension type_name
-	5,  // [5:5] is the sub-list for extension extendee
-	0,  // [0:5] is the sub-list for field type_name
+	1,  // 5: boilerplate.v1.ListUsersResponse.users:type_name -> boilerplate.v1.User
+	7,  // 6: boilerplate.v1.ListRolesResponse.roles:type_name -> boilerplate.v1.RoleOption
+	1,  // 7: boilerplate.v1.UpdateUserAccessResponse.user:type_name -> boilerplate.v1.User
+	13, // 8: boilerplate.v1.TemplateService.PublicPing:input_type -> google.protobuf.Empty
+	3,  // 9: boilerplate.v1.TemplateService.Register:input_type -> boilerplate.v1.RegisterRequest
+	2,  // 10: boilerplate.v1.TemplateService.Login:input_type -> boilerplate.v1.LoginRequest
+	13, // 11: boilerplate.v1.TemplateService.Me:input_type -> google.protobuf.Empty
+	13, // 12: boilerplate.v1.TemplateService.AdminPing:input_type -> google.protobuf.Empty
+	13, // 13: boilerplate.v1.TemplateService.ListUsers:input_type -> google.protobuf.Empty
+	13, // 14: boilerplate.v1.TemplateService.ListRoles:input_type -> google.protobuf.Empty
+	10, // 15: boilerplate.v1.TemplateService.UpdateUserAccess:input_type -> boilerplate.v1.UpdateUserAccessRequest
+	13, // 16: boilerplate.v1.TemplateService.OperatorPing:input_type -> google.protobuf.Empty
+	13, // 17: boilerplate.v1.TemplateService.ViewerPing:input_type -> google.protobuf.Empty
+	0,  // 18: boilerplate.v1.TemplateService.PublicPing:output_type -> boilerplate.v1.PingResponse
+	4,  // 19: boilerplate.v1.TemplateService.Register:output_type -> boilerplate.v1.LoginResponse
+	4,  // 20: boilerplate.v1.TemplateService.Login:output_type -> boilerplate.v1.LoginResponse
+	5,  // 21: boilerplate.v1.TemplateService.Me:output_type -> boilerplate.v1.MeResponse
+	6,  // 22: boilerplate.v1.TemplateService.AdminPing:output_type -> boilerplate.v1.RolePingResponse
+	8,  // 23: boilerplate.v1.TemplateService.ListUsers:output_type -> boilerplate.v1.ListUsersResponse
+	9,  // 24: boilerplate.v1.TemplateService.ListRoles:output_type -> boilerplate.v1.ListRolesResponse
+	11, // 25: boilerplate.v1.TemplateService.UpdateUserAccess:output_type -> boilerplate.v1.UpdateUserAccessResponse
+	6,  // 26: boilerplate.v1.TemplateService.OperatorPing:output_type -> boilerplate.v1.RolePingResponse
+	6,  // 27: boilerplate.v1.TemplateService.ViewerPing:output_type -> boilerplate.v1.RolePingResponse
+	18, // [18:28] is the sub-list for method output_type
+	8,  // [8:18] is the sub-list for method input_type
+	8,  // [8:8] is the sub-list for extension type_name
+	8,  // [8:8] is the sub-list for extension extendee
+	0,  // [0:8] is the sub-list for field type_name
 }
 
 func init() { file_api_proto_init() }
@@ -469,7 +803,7 @@ func file_api_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_api_proto_rawDesc), len(file_api_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   6,
+			NumMessages:   12,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

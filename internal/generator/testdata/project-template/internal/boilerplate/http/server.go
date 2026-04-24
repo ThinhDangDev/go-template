@@ -24,7 +24,7 @@ type Server struct {
 func NewServer(runtime *app.Runtime) *Server {
 	return &Server{
 		runtime:         runtime,
-		templateService: handler.NewTemplateService(runtime.AuthUseCase, runtime.SystemUseCase),
+		templateService: handler.NewTemplateService(runtime.AuthUseCase, runtime.AdminUseCase, runtime.SystemUseCase),
 	}
 }
 
@@ -59,12 +59,16 @@ func (s *Server) Handler() (*gin.Engine, error) {
 	router.GET("/readyz", s.readyz)
 
 	router.GET("/api/v1/public/ping", gin.WrapH(gatewayHandler))
+	router.POST("/api/v1/auth/register", gin.WrapH(gatewayHandler))
 	router.POST("/api/v1/auth/login", gin.WrapH(gatewayHandler))
 
 	protected := router.Group("/api/v1")
 	protected.Use(s.Authenticate(), s.RequireRBAC())
 	protected.GET("/auth/me", gin.WrapH(gatewayHandler))
 	protected.GET("/admin/ping", gin.WrapH(gatewayHandler))
+	protected.GET("/admin/users", gin.WrapH(gatewayHandler))
+	protected.GET("/admin/roles", gin.WrapH(gatewayHandler))
+	protected.PATCH("/admin/users/:user_id/access", gin.WrapH(gatewayHandler))
 	protected.GET("/operator/ping", gin.WrapH(gatewayHandler))
 	protected.GET("/viewer/ping", gin.WrapH(gatewayHandler))
 

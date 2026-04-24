@@ -26,6 +26,11 @@ message LoginRequest {
   string password = 2;
 }
 
+message RegisterRequest {
+  string email = 1;
+  string password = 2;
+}
+
 message LoginResponse {
   string access_token = 1;
   string token_type = 2;
@@ -42,10 +47,40 @@ message RolePingResponse {
   User user = 2;
 }
 
+message RoleOption {
+  string name = 1;
+  string description = 2;
+}
+
+message ListUsersResponse {
+  repeated User users = 1;
+}
+
+message ListRolesResponse {
+  repeated RoleOption roles = 1;
+}
+
+message UpdateUserAccessRequest {
+  string user_id = 1;
+  string role = 2;
+  bool is_active = 3;
+}
+
+message UpdateUserAccessResponse {
+  User user = 1;
+}
+
 service TemplateService {
   rpc PublicPing(google.protobuf.Empty) returns (PingResponse) {
     option (google.api.http) = {
       get: "/api/v1/public/ping"
+    };
+  }
+
+  rpc Register(RegisterRequest) returns (LoginResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/auth/register"
+      body: "*"
     };
   }
 
@@ -65,6 +100,25 @@ service TemplateService {
   rpc AdminPing(google.protobuf.Empty) returns (RolePingResponse) {
     option (google.api.http) = {
       get: "/api/v1/admin/ping"
+    };
+  }
+
+  rpc ListUsers(google.protobuf.Empty) returns (ListUsersResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/admin/users"
+    };
+  }
+
+  rpc ListRoles(google.protobuf.Empty) returns (ListRolesResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/admin/roles"
+    };
+  }
+
+  rpc UpdateUserAccess(UpdateUserAccessRequest) returns (UpdateUserAccessResponse) {
+    option (google.api.http) = {
+      patch: "/api/v1/admin/users/{user_id}/access"
+      body: "*"
     };
   }
 

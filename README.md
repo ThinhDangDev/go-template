@@ -41,8 +41,9 @@ The generated project includes:
 - Protocol Buffers with committed `protogen`
 - `make proto` and generated OpenAPI JSON
 - manual SQL migrations with `up/down/status/create`
-- JWT authentication
+- JWT authentication with public register/login
 - Casbin RBAC
+- admin user access management APIs
 - Prometheus metrics
 - OpenTelemetry tracing
 - structured JSON logging
@@ -50,10 +51,10 @@ The generated project includes:
 
 The generated project currently serves:
 
-- `10` HTTP endpoints total
+- `14` HTTP endpoints total
 - `4` infrastructure endpoints: `/healthz`, `/readyz`, `/metrics`, `/swagger.json`
-- `6` application HTTP endpoints exposed through Gin + grpc-gateway
-- `6` native gRPC methods in `TemplateService`
+- `10` application HTTP endpoints exposed through Gin + grpc-gateway
+- `10` native gRPC methods in `TemplateService`
 
 ## Template Flow
 
@@ -110,3 +111,8 @@ make migrate-up
 make seed-admin
 make run
 ```
+
+The generated boilerplate includes:
+
+- Public auth APIs: `POST /api/v1/auth/register`, `POST /api/v1/auth/login`, `GET /api/v1/auth/me`
+- Admin access APIs: `GET /api/v1/admin/users`, `GET /api/v1/admin/roles`, `PATCH /api/v1/admin/users/:user_id/access`

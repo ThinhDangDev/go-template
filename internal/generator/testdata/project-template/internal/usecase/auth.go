@@ -35,6 +35,27 @@ func NewAuthUseCase(
 	}
 }
 
+func (u *authUseCase) Register(ctx context.Context, email, password string) (*entity.AuthSession, error) {
+	email = strings.TrimSpace(email)
+	password = strings.TrimSpace(password)
+	if email == "" || password == "" {
+		return nil, domain.ErrInvalidInput
+	}
+
+	passwordHash, err := auth.HashPassword(password)
+	if err != nil {
+		u.logger.Error("failed to hash password", "error", err)
+		return nil, err
+	}
+
+	user, err := u.users.Create(ctx, email, passwordHash, entity.RoleViewer)
+	if err != nil {
+		return nil, err
+	}
+
+	return u.issueSession(user)
+}
+
 func (u *authUseCase) Login(ctx context.Context, email, password string) (*entity.AuthSession, error) {
 	email = strings.TrimSpace(email)
 	password = strings.TrimSpace(password)
@@ -57,6 +78,10 @@ func (u *authUseCase) Login(ctx context.Context, email, password string) (*entit
 		return nil, domain.ErrInvalidCredentials
 	}
 
+	return u.issueSession(user)
+}
+
+func (u *authUseCase) issueSession(user *entity.User) (*entity.AuthSession, error) {
 	token, err := u.tokens.IssueAccessToken(user.ID, user.Email, user.Role)
 	if err != nil {
 		u.logger.Error("failed to issue jwt", "error", err)

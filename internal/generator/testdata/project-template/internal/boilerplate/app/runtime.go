@@ -27,6 +27,7 @@ type Runtime struct {
 	Tokens        *auth.TokenManager
 	Authorizer    *auth.Authorizer
 	AuthUseCase   usecasecontract.AuthUseCase
+	AdminUseCase  usecasecontract.AdminUseCase
 	SystemUseCase usecasecontract.SystemUseCase
 	traceShutdown func(context.Context) error
 }
@@ -83,6 +84,7 @@ func Bootstrap(ctx context.Context) (*Runtime, error) {
 	userRepository := repository.NewUserRepository(db)
 	tokenManager := auth.NewTokenManager(cfg.JWTSecret, cfg.JWTIssuer, cfg.JWTAccessTTL)
 	authUseCase := usecase.NewAuthUseCase(userRepository, tokenManager, logger, cfg.JWTAccessTTL)
+	adminUseCase := usecase.NewAdminUseCase(userRepository)
 	systemUseCase := usecase.NewSystemUseCase()
 
 	telemetry.MarkAppInfo(cfg.ServiceName, cfg.Version, cfg.Environment)
@@ -95,6 +97,7 @@ func Bootstrap(ctx context.Context) (*Runtime, error) {
 		Tokens:        tokenManager,
 		Authorizer:    authorizer,
 		AuthUseCase:   authUseCase,
+		AdminUseCase:  adminUseCase,
 		SystemUseCase: systemUseCase,
 		traceShutdown: traceShutdown,
 	}, nil
