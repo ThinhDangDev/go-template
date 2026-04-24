@@ -63,9 +63,17 @@ func InitProject(cfg Config) error {
 		if err != nil {
 			return err
 		}
+		fileInfo, err := fs.Stat(templateFS, path)
+		if err != nil {
+			return err
+		}
 
 		rendered := replacer.Replace(string(content))
-		return os.WriteFile(dstPath, []byte(rendered), 0o644)
+		mode := os.FileMode(0o644)
+		if fileInfo.Mode().Perm()&0o111 != 0 || strings.HasSuffix(rel, ".sh") {
+			mode = 0o755
+		}
+		return os.WriteFile(dstPath, []byte(rendered), mode)
 	})
 }
 

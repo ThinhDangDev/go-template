@@ -13,6 +13,10 @@ go-template init my-service --module github.com/acme/my-service
 The generated project includes:
 
 - CLI-first app commands: `serve`, `migrate`, `seed`
+- Gin HTTP server + grpc-gateway
+- native gRPC server
+- Protocol Buffers with committed `protogen`
+- `make proto` and generated OpenAPI JSON
 - manual SQL migrations with `up/down/status/create`
 - JWT authentication
 - Casbin RBAC
@@ -28,6 +32,8 @@ go build ./cmd/go-template
 go test ./...
 go run ./cmd/go-template init demo-api
 ```
+
+The generated project exposes HTTP on `:8080` and gRPC on `:9090` by default.
 
 ## Generated Project Flow
 

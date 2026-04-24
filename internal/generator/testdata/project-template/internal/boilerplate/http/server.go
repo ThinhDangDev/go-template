@@ -1,26 +1,40 @@
 package transport
 
 import (
+	"context"
 	"net/http"
 	"time"
 
 	"__MODULE_PATH__/internal/boilerplate/app"
+	pb "__MODULE_PATH__/protogen"
 
 	"github.com/gin-gonic/gin"
+	gwruntime "github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
+	"google.golang.org/grpc"
 )
 
 type Server struct {
-	runtime *app.Runtime
+	runtime         *app.Runtime
+	templateService *TemplateService
+	gatewayHandler  http.Handler
 }
 
 func NewServer(runtime *app.Runtime) *Server {
-	return &Server{runtime: runtime}
+	return &Server{
+		runtime:         runtime,
+		templateService: NewTemplateService(runtime),
+	}
 }
 
-func (s *Server) Handler() *gin.Engine {
+func (s *Server) Handler() (*gin.Engine, error) {
 	if s.runtime.Config.Environment == "production" {
 		gin.SetMode(gin.ReleaseMode)
+	}
+
+	gatewayHandler, err := s.newGatewayHandler()
+	if err != nil {
+		return nil, err
 	}
 
 	router := gin.New()
@@ -36,29 +50,24 @@ func (s *Server) Handler() *gin.Engine {
 		c.JSON(http.StatusNotFound, gin.H{"error": "route not found"})
 	})
 
+	router.GET("/swagger.json", func(c *gin.Context) {
+		c.File(s.runtime.Config.ResolvedSwaggerJSONPath())
+	})
 	router.GET("/metrics", gin.WrapH(promhttp.Handler()))
 	router.GET("/healthz", s.healthz)
 	router.GET("/readyz", s.readyz)
 
-	api := router.Group("/api/v1")
-	api.GET("/public/ping", func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{"message": "public pong"})
-	})
+	router.GET("/api/v1/public/ping", gin.WrapH(gatewayHandler))
+	router.POST("/api/v1/auth/login", gin.WrapH(gatewayHandler))
 
-	authGroup := api.Group("/auth")
-	authGroup.POST("/login", s.login)
-	authGroup.GET("/me", s.Authenticate(), s.RequireRBAC(), s.me)
+	protected := router.Group("/api/v1")
+	protected.Use(s.Authenticate(), s.RequireRBAC())
+	protected.GET("/auth/me", gin.WrapH(gatewayHandler))
+	protected.GET("/admin/ping", gin.WrapH(gatewayHandler))
+	protected.GET("/operator/ping", gin.WrapH(gatewayHandler))
+	protected.GET("/viewer/ping", gin.WrapH(gatewayHandler))
 
-	adminGroup := api.Group("/admin", s.Authenticate(), s.RequireRBAC())
-	adminGroup.GET("/ping", s.rolePing("admin"))
-
-	operatorGroup := api.Group("/operator", s.Authenticate(), s.RequireRBAC())
-	operatorGroup.GET("/ping", s.rolePing("operator"))
-
-	viewerGroup := api.Group("/viewer", s.Authenticate(), s.RequireRBAC())
-	viewerGroup.GET("/ping", s.rolePing("viewer"))
-
-	return router
+	return router, nil
 }
 
 func (s *Server) HTTPServer(handler http.Handler) *http.Server {
@@ -70,4 +79,26 @@ func (s *Server) HTTPServer(handler http.Handler) *http.Server {
 		WriteTimeout:      s.runtime.Config.HTTPWriteTimeout,
 		IdleTimeout:       60 * time.Second,
 	}
+}
+
+func (s *Server) GRPCServer() *grpc.Server {
+	server := grpc.NewServer(
+		grpc.ChainUnaryInterceptor(s.AuthUnaryInterceptor()),
+	)
+	pb.RegisterTemplateServiceServer(server, s.templateService)
+	return server
+}
+
+func (s *Server) newGatewayHandler() (http.Handler, error) {
+	if s.gatewayHandler != nil {
+		return s.gatewayHandler, nil
+	}
+
+	mux := gwruntime.NewServeMux()
+	if err := pb.RegisterTemplateServiceHandlerServer(context.Background(), mux, s.templateService); err != nil {
+		return nil, err
+	}
+
+	s.gatewayHandler = mux
+	return s.gatewayHandler, nil
 }

@@ -19,3 +19,4 @@ lint: ## Run a lightweight lint pass with go vet
 smoke: build ## Generate a sample project into ./tmp-smoke
 	rm -rf ./tmp-smoke
 	./bin/go-template init ./tmp-smoke --module github.com/example/tmp-smoke
+	cd ./tmp-smoke && go test ./... && ./generate.sh

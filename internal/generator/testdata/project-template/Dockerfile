@@ -16,6 +16,7 @@ RUN apk --no-cache add ca-certificates tzdata && \
 WORKDIR /app
 COPY --from=builder /bin/__PROJECT_NAME__ /app/bin/__PROJECT_NAME__
 COPY --from=builder /app/configs /app/configs
+COPY --from=builder /app/internal/docs /app/internal/docs
 COPY --from=builder /app/migrations /app/migrations
 RUN mkdir -p /app/logs && chown -R appuser:appgroup /app
 

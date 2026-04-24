@@ -1,0 +1,82 @@
+syntax = "proto3";
+
+package boilerplate.v1;
+
+option go_package = "__MODULE_PATH__/protogen;protogen";
+
+import "google/api/annotations.proto";
+import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
+
+message PingResponse {
+  string message = 1;
+}
+
+message User {
+  string id = 1;
+  string email = 2;
+  string role = 3;
+  bool is_active = 4;
+  google.protobuf.Timestamp created_at = 5;
+  google.protobuf.Timestamp updated_at = 6;
+}
+
+message LoginRequest {
+  string email = 1;
+  string password = 2;
+}
+
+message LoginResponse {
+  string access_token = 1;
+  string token_type = 2;
+  int64 expires_in = 3;
+  User user = 4;
+}
+
+message MeResponse {
+  User user = 1;
+}
+
+message RolePingResponse {
+  string message = 1;
+  User user = 2;
+}
+
+service TemplateService {
+  rpc PublicPing(google.protobuf.Empty) returns (PingResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/public/ping"
+    };
+  }
+
+  rpc Login(LoginRequest) returns (LoginResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/auth/login"
+      body: "*"
+    };
+  }
+
+  rpc Me(google.protobuf.Empty) returns (MeResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/auth/me"
+    };
+  }
+
+  rpc AdminPing(google.protobuf.Empty) returns (RolePingResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/admin/ping"
+    };
+  }
+
+  rpc OperatorPing(google.protobuf.Empty) returns (RolePingResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/operator/ping"
+    };
+  }
+
+  rpc ViewerPing(google.protobuf.Empty) returns (RolePingResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/viewer/ping"
+    };
+  }
+}

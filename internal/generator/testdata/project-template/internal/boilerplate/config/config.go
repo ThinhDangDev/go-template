@@ -19,6 +19,8 @@ type Config struct {
 	Version          string
 	HTTPHost         string
 	HTTPPort         int
+	GRPCHost         string
+	GRPCPort         int
 	HTTPReadTimeout  time.Duration
 	HTTPWriteTimeout time.Duration
 	ShutdownTimeout  time.Duration
@@ -40,6 +42,7 @@ type Config struct {
 	LogFile          string
 	MigrationsDir    string
 	CasbinModelPath  string
+	SwaggerJSONPath  string
 	AdminEmail       string
 	AdminPassword    string
 	AdminRole        string
@@ -54,6 +57,8 @@ func Load() (Config, error) {
 		Version:          envOrDefault("APP_VERSION", "dev"),
 		HTTPHost:         envOrDefault("HTTP_HOST", "0.0.0.0"),
 		HTTPPort:         envAsInt("HTTP_PORT", 8080),
+		GRPCHost:         envOrDefault("GRPC_HOST", "0.0.0.0"),
+		GRPCPort:         envAsInt("GRPC_PORT", 9090),
 		HTTPReadTimeout:  envAsDuration("HTTP_READ_TIMEOUT", 15*time.Second),
 		HTTPWriteTimeout: envAsDuration("HTTP_WRITE_TIMEOUT", 15*time.Second),
 		ShutdownTimeout:  envAsDuration("SHUTDOWN_TIMEOUT", 10*time.Second),
@@ -74,6 +79,7 @@ func Load() (Config, error) {
 		LogFile:          envOrDefault("LOG_FILE", "logs/__PROJECT_NAME__.log"),
 		MigrationsDir:    envOrDefault("MIGRATIONS_DIR", "migrations/sql"),
 		CasbinModelPath:  envOrDefault("CASBIN_MODEL_PATH", "configs/rbac_model.conf"),
+		SwaggerJSONPath:  envOrDefault("SWAGGER_JSON_PATH", "internal/docs/api.swagger.json"),
 		AdminEmail:       envOrDefault("ADMIN_EMAIL", "admin@example.com"),
 		AdminPassword:    strings.TrimSpace(os.Getenv("ADMIN_PASSWORD")),
 		AdminRole:        envOrDefault("ADMIN_ROLE", "admin"),
@@ -100,12 +106,20 @@ func (c Config) HTTPAddress() string {
 	return fmt.Sprintf("%s:%d", c.HTTPHost, c.HTTPPort)
 }
 
+func (c Config) GRPCAddress() string {
+	return fmt.Sprintf("%s:%d", c.GRPCHost, c.GRPCPort)
+}
+
 func (c Config) ResolvedMigrationsDir() string {
 	return resolvePath(c.MigrationsDir)
 }
 
 func (c Config) ResolvedCasbinModelPath() string {
 	return resolvePath(c.CasbinModelPath)
+}
+
+func (c Config) ResolvedSwaggerJSONPath() string {
+	return resolvePath(c.SwaggerJSONPath)
 }
 
 func resolvePath(path string) string {

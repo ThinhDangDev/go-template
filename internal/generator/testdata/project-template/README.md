@@ -2,17 +2,22 @@
 
 `__PROJECT_NAME__` is a CLI-first Go backend template with:
 
-- HTTP server bootstrap
+- Gin HTTP server
+- Protocol Buffers + grpc-gateway
+- native gRPC server bootstrap
 - manual SQL migrations with `up/down/status/create`
 - JWT authentication
 - Casbin RBAC
 - structured JSON logging
 - Prometheus metrics
 - OpenTelemetry tracing
+- OpenAPI JSON generation
 
 ## Commands
 
 ```bash
+make proto
+make swagger
 go run ./cmd/main.go serve
 go run ./cmd/main.go migrate up
 go run ./cmd/main.go migrate down --steps 1
@@ -50,17 +55,22 @@ make run
 - `GET /healthz`
 - `GET /readyz`
 - `GET /metrics`
+- `GET /swagger.json`
+- `GET /api/v1/public/ping`
 - `POST /api/v1/auth/login`
 - `GET /api/v1/auth/me`
 - `GET /api/v1/admin/ping`
 - `GET /api/v1/operator/ping`
 - `GET /api/v1/viewer/ping`
 
+HTTP JSON is served by Gin + grpc-gateway on port `8080` by default. Native gRPC is served on port `9090` by default using the same service handlers and auth/RBAC rules.
+
 ## Project Layout
 
 ```text
 cmd/main.go
 configs/rbac_model.conf
+generate.sh
 internal/boilerplate/
   app/
   auth/
@@ -69,7 +79,11 @@ internal/boilerplate/
   http/
   store/
   telemetry/
+internal/docs/
 migrations/sql/
+proto/
+protogen/
+third_party/googleapis/
 ```
 
 ## Environment
@@ -82,6 +96,9 @@ Common optional variables:
 
 - `DATABASE_URL`
 - `POSTGRES_*`
+- `GRPC_HOST`
+- `GRPC_PORT`
+- `SWAGGER_JSON_PATH`
 - `OTEL_EXPORTER_OTLP_ENDPOINT`
 - `LOG_ENABLE_FILE`
 
@@ -96,3 +113,20 @@ docker run --rm -p 8080:8080 --env-file .env __PROJECT_NAME__
 ```
 
 The container starts with `serve`; migrations stay manual by design.
+
+## Proto Tooling
+
+Install generators once:
+
+```bash
+go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
+go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest
+go install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-grpc-gateway@latest
+go install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2@latest
+```
+
+Then regenerate:
+
+```bash
+make proto
+```

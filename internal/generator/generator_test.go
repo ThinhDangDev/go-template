@@ -26,6 +26,11 @@ func TestInitProject(t *testing.T) {
 	if !strings.Contains(string(goMod), "module github.com/acme/sample-api") {
 		t.Fatalf("go.mod module path was not replaced")
 	}
+	if info, err := os.Stat(filepath.Join(targetDir, "go.mod")); err != nil {
+		t.Fatalf("stat go.mod: %v", err)
+	} else if info.Mode().Perm()&0o200 == 0 {
+		t.Fatalf("go.mod should be writable, got mode %o", info.Mode().Perm())
+	}
 
 	envExample, err := os.ReadFile(filepath.Join(targetDir, ".env.example"))
 	if err != nil {
@@ -45,6 +50,27 @@ func TestInitProject(t *testing.T) {
 
 	if _, err := os.Stat(filepath.Join(targetDir, ".gitignore")); err != nil {
 		t.Fatalf(".gitignore was not generated: %v", err)
+	}
+
+	if _, err := os.Stat(filepath.Join(targetDir, "proto", "api.proto")); err != nil {
+		t.Fatalf("proto/api.proto was not generated: %v", err)
+	}
+
+	if _, err := os.Stat(filepath.Join(targetDir, "generate.sh")); err != nil {
+		t.Fatalf("generate.sh was not generated: %v", err)
+	}
+	if info, err := os.Stat(filepath.Join(targetDir, "generate.sh")); err != nil {
+		t.Fatalf("stat generate.sh: %v", err)
+	} else if info.Mode().Perm()&0o111 == 0 {
+		t.Fatalf("generate.sh should be executable, got mode %o", info.Mode().Perm())
+	}
+
+	if _, err := os.Stat(filepath.Join(targetDir, "protogen", "api.pb.go")); err != nil {
+		t.Fatalf("protogen/api.pb.go was not generated: %v", err)
+	}
+
+	if _, err := os.Stat(filepath.Join(targetDir, "internal", "docs", "api.swagger.json")); err != nil {
+		t.Fatalf("internal/docs/api.swagger.json was not generated: %v", err)
 	}
 }
 

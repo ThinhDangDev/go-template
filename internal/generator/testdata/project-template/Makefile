@@ -6,10 +6,16 @@ endif
 name ?=
 steps ?= 1
 
-.PHONY: help run build test fmt lint migrate-up migrate-down migrate-status migrate-create seed-admin
+.PHONY: help run build test fmt lint proto swagger migrate-up migrate-down migrate-status migrate-create seed-admin
 
 help: ## Display available targets
 	@grep -h -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[36m%-20s\033[0m %s\n", $$1, $$2}'
+
+proto: ## Generate protobuf, grpc-gateway, and OpenAPI artifacts
+	@chmod +x ./generate.sh
+	@./generate.sh
+
+swagger: proto ## Alias for proto generation
 
 run: ## Run the boilerplate HTTP server
 	go run ./cmd/main.go serve

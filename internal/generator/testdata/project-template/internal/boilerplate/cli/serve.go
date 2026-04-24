@@ -3,10 +3,12 @@ package cli
 import (
 	"context"
 	"errors"
+	"net"
 	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
+	"time"
 
 	"__MODULE_PATH__/internal/boilerplate/app"
 	transport "__MODULE_PATH__/internal/boilerplate/http"
@@ -35,13 +37,35 @@ func newServeCmd() *cobra.Command {
 			}()
 
 			server := transport.NewServer(runtime)
-			httpServer := server.HTTPServer(server.Handler())
+			httpHandler, err := server.Handler()
+			if err != nil {
+				return err
+			}
+			httpServer := server.HTTPServer(httpHandler)
+			grpcServer := server.GRPCServer()
 
-			runtime.Logger.Info("starting boilerplate server", "addr", runtime.Config.HTTPAddress())
+			grpcListener, err := net.Listen("tcp", runtime.Config.GRPCAddress())
+			if err != nil {
+				return err
+			}
+			defer func() {
+				_ = grpcListener.Close()
+			}()
 
-			errCh := make(chan error, 1)
+			runtime.Logger.Info(
+				"starting boilerplate servers",
+				"http_addr", runtime.Config.HTTPAddress(),
+				"grpc_addr", runtime.Config.GRPCAddress(),
+			)
+
+			errCh := make(chan error, 2)
 			go func() {
 				if err := httpServer.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
+					errCh <- err
+				}
+			}()
+			go func() {
+				if err := grpcServer.Serve(grpcListener); err != nil {
 					errCh <- err
 				}
 			}()
@@ -60,6 +84,16 @@ func newServeCmd() *cobra.Command {
 
 				if err := httpServer.Shutdown(shutdownCtx); err != nil {
 					return err
+				}
+				stopDone := make(chan struct{})
+				go func() {
+					grpcServer.GracefulStop()
+					close(stopDone)
+				}()
+				select {
+				case <-stopDone:
+				case <-time.After(runtime.Config.ShutdownTimeout):
+					grpcServer.Stop()
 				}
 				return nil
 			}

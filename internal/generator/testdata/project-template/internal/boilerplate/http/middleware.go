@@ -1,6 +1,7 @@
 package transport
 
 import (
+	"context"
 	"fmt"
 	"log/slog"
 	"net/http"
@@ -22,6 +23,13 @@ const (
 	requestIDHeader  = "X-Request-ID"
 	claimsContextKey = "auth_claims"
 	userContextKey   = "auth_user"
+)
+
+type authContextKey string
+
+const (
+	claimsRequestContextKey authContextKey = "request.auth_claims"
+	userRequestContextKey   authContextKey = "request.auth_user"
 )
 
 func RequestIDMiddleware() gin.HandlerFunc {
@@ -173,6 +181,7 @@ func (s *Server) Authenticate() gin.HandlerFunc {
 
 		c.Set(claimsContextKey, claims)
 		c.Set(userContextKey, user)
+		c.Request = c.Request.WithContext(withAuthContext(c.Request.Context(), claims, user))
 		c.Next()
 	}
 }
@@ -207,15 +216,41 @@ func getClaims(c *gin.Context) (*auth.Claims, bool) {
 	}
 
 	claims, ok := value.(*auth.Claims)
-	return claims, ok
+	if ok {
+		return claims, true
+	}
+
+	return getClaimsFromContext(c.Request.Context())
 }
 
 func getCurrentUser(c *gin.Context) (*store.User, bool) {
 	value, exists := c.Get(userContextKey)
 	if !exists {
-		return nil, false
+		return getCurrentUserFromContext(c.Request.Context())
 	}
 
+	user, ok := value.(*store.User)
+	if ok {
+		return user, true
+	}
+
+	return getCurrentUserFromContext(c.Request.Context())
+}
+
+func withAuthContext(ctx context.Context, claims *auth.Claims, user *store.User) context.Context {
+	ctx = context.WithValue(ctx, claimsRequestContextKey, claims)
+	ctx = context.WithValue(ctx, userRequestContextKey, user)
+	return ctx
+}
+
+func getClaimsFromContext(ctx context.Context) (*auth.Claims, bool) {
+	value := ctx.Value(claimsRequestContextKey)
+	claims, ok := value.(*auth.Claims)
+	return claims, ok
+}
+
+func getCurrentUserFromContext(ctx context.Context) (*store.User, bool) {
+	value := ctx.Value(userRequestContextKey)
 	user, ok := value.(*store.User)
 	return user, ok
 }
