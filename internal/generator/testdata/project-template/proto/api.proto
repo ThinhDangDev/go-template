@@ -122,15 +122,4 @@ service TemplateService {
     };
   }
 
-  rpc OperatorPing(google.protobuf.Empty) returns (RolePingResponse) {
-    option (google.api.http) = {
-      get: "/api/v1/operator/ping"
-    };
-  }
-
-  rpc ViewerPing(google.protobuf.Empty) returns (RolePingResponse) {
-    option (google.api.http) = {
-      get: "/api/v1/viewer/ping"
-    };
-  }
 }

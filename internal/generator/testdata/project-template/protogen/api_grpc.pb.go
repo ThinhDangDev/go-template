@@ -28,8 +28,6 @@ const (
 	TemplateService_ListUsers_FullMethodName        = "/boilerplate.v1.TemplateService/ListUsers"
 	TemplateService_ListRoles_FullMethodName        = "/boilerplate.v1.TemplateService/ListRoles"
 	TemplateService_UpdateUserAccess_FullMethodName = "/boilerplate.v1.TemplateService/UpdateUserAccess"
-	TemplateService_OperatorPing_FullMethodName     = "/boilerplate.v1.TemplateService/OperatorPing"
-	TemplateService_ViewerPing_FullMethodName       = "/boilerplate.v1.TemplateService/ViewerPing"
 )
 
 // TemplateServiceClient is the client API for TemplateService service.
@@ -44,8 +42,6 @@ type TemplateServiceClient interface {
 	ListUsers(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*ListUsersResponse, error)
 	ListRoles(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*ListRolesResponse, error)
 	UpdateUserAccess(ctx context.Context, in *UpdateUserAccessRequest, opts ...grpc.CallOption) (*UpdateUserAccessResponse, error)
-	OperatorPing(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*RolePingResponse, error)
-	ViewerPing(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*RolePingResponse, error)
 }
 
 type templateServiceClient struct {
@@ -136,26 +132,6 @@ func (c *templateServiceClient) UpdateUserAccess(ctx context.Context, in *Update
 	return out, nil
 }
 
-func (c *templateServiceClient) OperatorPing(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*RolePingResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(RolePingResponse)
-	err := c.cc.Invoke(ctx, TemplateService_OperatorPing_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *templateServiceClient) ViewerPing(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*RolePingResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(RolePingResponse)
-	err := c.cc.Invoke(ctx, TemplateService_ViewerPing_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 // TemplateServiceServer is the server API for TemplateService service.
 // All implementations must embed UnimplementedTemplateServiceServer
 // for forward compatibility.
@@ -168,8 +144,6 @@ type TemplateServiceServer interface {
 	ListUsers(context.Context, *emptypb.Empty) (*ListUsersResponse, error)
 	ListRoles(context.Context, *emptypb.Empty) (*ListRolesResponse, error)
 	UpdateUserAccess(context.Context, *UpdateUserAccessRequest) (*UpdateUserAccessResponse, error)
-	OperatorPing(context.Context, *emptypb.Empty) (*RolePingResponse, error)
-	ViewerPing(context.Context, *emptypb.Empty) (*RolePingResponse, error)
 	mustEmbedUnimplementedTemplateServiceServer()
 }
 
@@ -203,12 +177,6 @@ func (UnimplementedTemplateServiceServer) ListRoles(context.Context, *emptypb.Em
 }
 func (UnimplementedTemplateServiceServer) UpdateUserAccess(context.Context, *UpdateUserAccessRequest) (*UpdateUserAccessResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateUserAccess not implemented")
-}
-func (UnimplementedTemplateServiceServer) OperatorPing(context.Context, *emptypb.Empty) (*RolePingResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method OperatorPing not implemented")
-}
-func (UnimplementedTemplateServiceServer) ViewerPing(context.Context, *emptypb.Empty) (*RolePingResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ViewerPing not implemented")
 }
 func (UnimplementedTemplateServiceServer) mustEmbedUnimplementedTemplateServiceServer() {}
 func (UnimplementedTemplateServiceServer) testEmbeddedByValue()                         {}
@@ -375,42 +343,6 @@ func _TemplateService_UpdateUserAccess_Handler(srv interface{}, ctx context.Cont
 	return interceptor(ctx, in, info, handler)
 }
 
-func _TemplateService_OperatorPing_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(emptypb.Empty)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(TemplateServiceServer).OperatorPing(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: TemplateService_OperatorPing_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(TemplateServiceServer).OperatorPing(ctx, req.(*emptypb.Empty))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _TemplateService_ViewerPing_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(emptypb.Empty)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(TemplateServiceServer).ViewerPing(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: TemplateService_ViewerPing_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(TemplateServiceServer).ViewerPing(ctx, req.(*emptypb.Empty))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 // TemplateService_ServiceDesc is the grpc.ServiceDesc for TemplateService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -449,14 +381,6 @@ var TemplateService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "UpdateUserAccess",
 			Handler:    _TemplateService_UpdateUserAccess_Handler,
-		},
-		{
-			MethodName: "OperatorPing",
-			Handler:    _TemplateService_OperatorPing_Handler,
-		},
-		{
-			MethodName: "ViewerPing",
-			Handler:    _TemplateService_ViewerPing_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

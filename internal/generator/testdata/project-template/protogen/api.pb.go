@@ -712,7 +712,7 @@ const file_api_proto_rawDesc = "" +
 	"\x04role\x18\x02 \x01(\tR\x04role\x12\x1b\n" +
 	"\tis_active\x18\x03 \x01(\bR\bisActive\"D\n" +
 	"\x18UpdateUserAccessResponse\x12(\n" +
-	"\x04user\x18\x01 \x01(\v2\x14.boilerplate.v1.UserR\x04user2\xac\b\n" +
+	"\x04user\x18\x01 \x01(\v2\x14.boilerplate.v1.UserR\x04user2\xde\x06\n" +
 	"\x0fTemplateService\x12_\n" +
 	"\n" +
 	"PublicPing\x12\x16.google.protobuf.Empty\x1a\x1c.boilerplate.v1.PingResponse\"\x1b\x82\xd3\xe4\x93\x02\x15\x12\x13/api/v1/public/ping\x12l\n" +
@@ -722,10 +722,7 @@ const file_api_proto_rawDesc = "" +
 	"\tAdminPing\x12\x16.google.protobuf.Empty\x1a .boilerplate.v1.RolePingResponse\"\x1a\x82\xd3\xe4\x93\x02\x14\x12\x12/api/v1/admin/ping\x12c\n" +
 	"\tListUsers\x12\x16.google.protobuf.Empty\x1a!.boilerplate.v1.ListUsersResponse\"\x1b\x82\xd3\xe4\x93\x02\x15\x12\x13/api/v1/admin/users\x12c\n" +
 	"\tListRoles\x12\x16.google.protobuf.Empty\x1a!.boilerplate.v1.ListRolesResponse\"\x1b\x82\xd3\xe4\x93\x02\x15\x12\x13/api/v1/admin/roles\x12\x96\x01\n" +
-	"\x10UpdateUserAccess\x12'.boilerplate.v1.UpdateUserAccessRequest\x1a(.boilerplate.v1.UpdateUserAccessResponse\"/\x82\xd3\xe4\x93\x02):\x01*2$/api/v1/admin/users/{user_id}/access\x12g\n" +
-	"\fOperatorPing\x12\x16.google.protobuf.Empty\x1a .boilerplate.v1.RolePingResponse\"\x1d\x82\xd3\xe4\x93\x02\x17\x12\x15/api/v1/operator/ping\x12c\n" +
-	"\n" +
-	"ViewerPing\x12\x16.google.protobuf.Empty\x1a .boilerplate.v1.RolePingResponse\"\x1b\x82\xd3\xe4\x93\x02\x15\x12\x13/api/v1/viewer/pingB#Z!__MODULE_PATH__/protogen;protogenb\x06proto3"
+	"\x10UpdateUserAccess\x12'.boilerplate.v1.UpdateUserAccessRequest\x1a(.boilerplate.v1.UpdateUserAccessResponse\"/\x82\xd3\xe4\x93\x02):\x01*2$/api/v1/admin/users/{user_id}/accessB#Z!__MODULE_PATH__/protogen;protogenb\x06proto3"
 
 var (
 	file_api_proto_rawDescOnce sync.Once
@@ -773,20 +770,16 @@ var file_api_proto_depIdxs = []int32{
 	13, // 13: boilerplate.v1.TemplateService.ListUsers:input_type -> google.protobuf.Empty
 	13, // 14: boilerplate.v1.TemplateService.ListRoles:input_type -> google.protobuf.Empty
 	10, // 15: boilerplate.v1.TemplateService.UpdateUserAccess:input_type -> boilerplate.v1.UpdateUserAccessRequest
-	13, // 16: boilerplate.v1.TemplateService.OperatorPing:input_type -> google.protobuf.Empty
-	13, // 17: boilerplate.v1.TemplateService.ViewerPing:input_type -> google.protobuf.Empty
-	0,  // 18: boilerplate.v1.TemplateService.PublicPing:output_type -> boilerplate.v1.PingResponse
-	4,  // 19: boilerplate.v1.TemplateService.Register:output_type -> boilerplate.v1.LoginResponse
-	4,  // 20: boilerplate.v1.TemplateService.Login:output_type -> boilerplate.v1.LoginResponse
-	5,  // 21: boilerplate.v1.TemplateService.Me:output_type -> boilerplate.v1.MeResponse
-	6,  // 22: boilerplate.v1.TemplateService.AdminPing:output_type -> boilerplate.v1.RolePingResponse
-	8,  // 23: boilerplate.v1.TemplateService.ListUsers:output_type -> boilerplate.v1.ListUsersResponse
-	9,  // 24: boilerplate.v1.TemplateService.ListRoles:output_type -> boilerplate.v1.ListRolesResponse
-	11, // 25: boilerplate.v1.TemplateService.UpdateUserAccess:output_type -> boilerplate.v1.UpdateUserAccessResponse
-	6,  // 26: boilerplate.v1.TemplateService.OperatorPing:output_type -> boilerplate.v1.RolePingResponse
-	6,  // 27: boilerplate.v1.TemplateService.ViewerPing:output_type -> boilerplate.v1.RolePingResponse
-	18, // [18:28] is the sub-list for method output_type
-	8,  // [8:18] is the sub-list for method input_type
+	0,  // 16: boilerplate.v1.TemplateService.PublicPing:output_type -> boilerplate.v1.PingResponse
+	4,  // 17: boilerplate.v1.TemplateService.Register:output_type -> boilerplate.v1.LoginResponse
+	4,  // 18: boilerplate.v1.TemplateService.Login:output_type -> boilerplate.v1.LoginResponse
+	5,  // 19: boilerplate.v1.TemplateService.Me:output_type -> boilerplate.v1.MeResponse
+	6,  // 20: boilerplate.v1.TemplateService.AdminPing:output_type -> boilerplate.v1.RolePingResponse
+	8,  // 21: boilerplate.v1.TemplateService.ListUsers:output_type -> boilerplate.v1.ListUsersResponse
+	9,  // 22: boilerplate.v1.TemplateService.ListRoles:output_type -> boilerplate.v1.ListRolesResponse
+	11, // 23: boilerplate.v1.TemplateService.UpdateUserAccess:output_type -> boilerplate.v1.UpdateUserAccessResponse
+	16, // [16:24] is the sub-list for method output_type
+	8,  // [8:16] is the sub-list for method input_type
 	8,  // [8:8] is the sub-list for extension type_name
 	8,  // [8:8] is the sub-list for extension extendee
 	0,  // [0:8] is the sub-list for field type_name

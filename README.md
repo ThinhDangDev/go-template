@@ -51,10 +51,10 @@ The generated project includes:
 
 The generated project currently serves:
 
-- `14` HTTP endpoints total
+- `12` HTTP endpoints total
 - `4` infrastructure endpoints: `/healthz`, `/readyz`, `/metrics`, `/swagger.json`
-- `10` application HTTP endpoints exposed through Gin + grpc-gateway
-- `10` native gRPC methods in `TemplateService`
+- `8` application HTTP endpoints exposed through Gin + grpc-gateway
+- `8` native gRPC methods in `TemplateService`
 
 ## Template Flow
 

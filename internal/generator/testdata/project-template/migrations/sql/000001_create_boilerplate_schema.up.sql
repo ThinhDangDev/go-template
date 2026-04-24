@@ -28,7 +28,5 @@ INSERT INTO casbin_rule (ptype, v0, v1, v2)
 VALUES
     ('p', 'admin', '/api/v1/*', '(GET|POST|PUT|PATCH|DELETE)'),
     ('p', 'operator', '/api/v1/auth/me', 'GET'),
-    ('p', 'operator', '/api/v1/operator/*', 'GET'),
-    ('p', 'viewer', '/api/v1/auth/me', 'GET'),
-    ('p', 'viewer', '/api/v1/viewer/*', 'GET')
+    ('p', 'viewer', '/api/v1/auth/me', 'GET')
 ON CONFLICT DO NOTHING;

@@ -76,10 +76,10 @@ flowchart LR
 
 ## Routes
 
-This template currently serves `14` HTTP endpoints total:
+This template currently serves `12` HTTP endpoints total:
 
 - `4` infrastructure endpoints: `/healthz`, `/readyz`, `/metrics`, `/swagger.json`
-- `10` application endpoints from `TemplateService`
+- `8` application endpoints from `TemplateService`
 
 - `GET /healthz`
 - `GET /readyz`
@@ -93,10 +93,8 @@ This template currently serves `14` HTTP endpoints total:
 - `GET /api/v1/admin/users`
 - `GET /api/v1/admin/roles`
 - `PATCH /api/v1/admin/users/:user_id/access`
-- `GET /api/v1/operator/ping`
-- `GET /api/v1/viewer/ping`
 
-The same template also serves `10` native gRPC methods:
+The same template also serves `8` native gRPC methods:
 
 - `PublicPing`
 - `Register`
@@ -106,8 +104,6 @@ The same template also serves `10` native gRPC methods:
 - `ListUsers`
 - `ListRoles`
 - `UpdateUserAccess`
-- `OperatorPing`
-- `ViewerPing`
 
 HTTP JSON is served by Gin + grpc-gateway on port `8080` by default. Native gRPC is served on port `9090` by default using the same service handlers and auth/RBAC rules.
 

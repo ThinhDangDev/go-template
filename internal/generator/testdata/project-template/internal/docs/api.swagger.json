@@ -206,28 +206,6 @@
         ]
       }
     },
-    "/api/v1/operator/ping": {
-      "get": {
-        "operationId": "TemplateService_OperatorPing",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/v1RolePingResponse"
-            }
-          },
-          "default": {
-            "description": "An unexpected error response.",
-            "schema": {
-              "$ref": "#/definitions/rpcStatus"
-            }
-          }
-        },
-        "tags": [
-          "TemplateService"
-        ]
-      }
-    },
     "/api/v1/public/ping": {
       "get": {
         "operationId": "TemplateService_PublicPing",
@@ -236,28 +214,6 @@
             "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/v1PingResponse"
-            }
-          },
-          "default": {
-            "description": "An unexpected error response.",
-            "schema": {
-              "$ref": "#/definitions/rpcStatus"
-            }
-          }
-        },
-        "tags": [
-          "TemplateService"
-        ]
-      }
-    },
-    "/api/v1/viewer/ping": {
-      "get": {
-        "operationId": "TemplateService_ViewerPing",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/v1RolePingResponse"
             }
           },
           "default": {

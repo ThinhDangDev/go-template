@@ -31,8 +31,6 @@ var grpcRouteBindings = map[string]grpcRouteBinding{
 		Path:   "/api/v1/admin/users/:user_id/access",
 		Method: "PATCH",
 	},
-	"/boilerplate.v1.TemplateService/OperatorPing": {Path: "/api/v1/operator/ping", Method: "GET"},
-	"/boilerplate.v1.TemplateService/ViewerPing":   {Path: "/api/v1/viewer/ping", Method: "GET"},
 }
 
 func (s *Server) AuthUnaryInterceptor() grpc.UnaryServerInterceptor {

@@ -81,14 +81,6 @@ func (h *TemplateService) AdminPing(ctx context.Context, _ *emptypb.Empty) (*pb.
 	return h.rolePing(ctx, "admin")
 }
 
-func (h *TemplateService) OperatorPing(ctx context.Context, _ *emptypb.Empty) (*pb.RolePingResponse, error) {
-	return h.rolePing(ctx, "operator")
-}
-
-func (h *TemplateService) ViewerPing(ctx context.Context, _ *emptypb.Empty) (*pb.RolePingResponse, error) {
-	return h.rolePing(ctx, "viewer")
-}
-
 func (h *TemplateService) ListUsers(ctx context.Context, _ *emptypb.Empty) (*pb.ListUsersResponse, error) {
 	users, err := h.adminUseCase.ListUsers(ctx)
 	if err != nil {

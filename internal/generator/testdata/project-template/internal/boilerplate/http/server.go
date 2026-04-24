@@ -69,8 +69,6 @@ func (s *Server) Handler() (*gin.Engine, error) {
 	protected.GET("/admin/users", gin.WrapH(gatewayHandler))
 	protected.GET("/admin/roles", gin.WrapH(gatewayHandler))
 	protected.PATCH("/admin/users/:user_id/access", gin.WrapH(gatewayHandler))
-	protected.GET("/operator/ping", gin.WrapH(gatewayHandler))
-	protected.GET("/viewer/ping", gin.WrapH(gatewayHandler))
 
 	return router, nil
 }

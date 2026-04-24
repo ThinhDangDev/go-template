@@ -34,11 +34,11 @@ func AvailableRoles() []RoleDefinition {
 		},
 		{
 			Name:        RoleOperator,
-			Description: "Operational access for protected operator routes.",
+			Description: "Authenticated non-admin access for internal operators.",
 		},
 		{
 			Name:        RoleViewer,
-			Description: "Read-only access for protected viewer routes.",
+			Description: "Default authenticated access for self-service users.",
 		},
 	}
 }
